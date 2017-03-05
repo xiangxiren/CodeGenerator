@@ -1,0 +1,225 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" Src="" Inherits="" Debug="False" LinePragmas="True" Description="根据选择的数据库或表生成实体类" ResponseEncoding="UTF-8" %>
+<%@ Property Name="TableName" Type="SchemaExplorer.TableSchema" Default="" Optional="False" Category="" Description="选择需要生成的指定表的实体类" OnChanged="" Editor="" EditorBase="" Serializer="" %>
+<%@ Property Name="Namespace" Type="String" Default="" Optional="False" Category="" Description="命名空间" OnChanged="" Editor="" EditorBase="" Serializer="" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data.OracleClient" %>
+<%@ Import Namespace="System.Data.OracleClient" %>
+<%@ Import Namespace="SchemaExplorer" %>
+using System;
+using JG.Core;
+using JG.Core.Cache;
+using PetaPoco;
+using Scm.Component.SecurityModel;
+using Scm.Component.Common;
+
+namespace <%=Namespace %>
+{
+    /// <summary>
+    /// <%=GetTableDescription(TableName) %>
+    /// </summary>
+    [Serializable]
+    [TableName("<%=TableName.Name %>")]
+    [PrimaryKey("<%= GetPrimaryKeyColumn(TableName) %>", autoIncrement = false)]
+    [CacheSetting(false,PropertyNameOfDBShard = "ClientID",PropertyNameOfCacheShard ="ClientID" ,PropertyNamesOfArea = "ClientID", ExpirationPolicy = EntityCacheExpirationPolicies.Stable)]
+    public class <%=FormatTableName(TableName) %>Entity : ScmBaseEntity
+    {
+        public static <%=FormatTableName(TableName) %>Entity New()
+        {
+            <%=FormatTableName(TableName) %>Entity entity = new <%=FormatTableName(TableName) %>Entity();
+            entity.Init();
+            <%foreach(ColumnSchema column in TableName.Columns) {%>
+                <%if(!column.IsPrimaryKeyMember&&column.Name!="CREATEUSERID"&&column.Name!="CREATEDATE"&&column.Name!="UPDATEUSERID"
+                    &&column.Name!="UPDATEDATE"&&column.Name!="CLIENTID"&&column.Name!="STATUS"&&column.Name!="UpdateUserName"
+            &&column.Name!="ORGID"&&column.Name!="STAFFID")  {%>
+                    <%if(column.SystemType==typeof(System.String)){%>
+            entity.<%=column.Name %> = string.Empty;
+               <%}}} %>
+            return entity;
+        }
+        
+        #region 属性
+        <%foreach(ColumnSchema column in TableName.Columns) {%>
+        <%if(!column.IsPrimaryKeyMember&&column.Name!="CREATEUSERID"&&column.Name!="CREATEDATE"&&column.Name!="UPDATEUSERID"
+                    &&column.Name!="UPDATEDATE"&&column.Name!="CLIENTID"&&column.Name!="STATUS"&&column.Name!="UpdateUserName"
+            &&column.Name!="ORGID"&&column.Name!="STAFFID")  {%>
+        /// <summary>
+        /// <% if(column.Description==null ||column.Description.Trim().Length==0) {%> <%= column.Name %> <% } else {%> <%= column.Description.Replace("\r\n"," ") %> <%} %> 
+        /// </summary>
+        public <%= GetDataTypeString(column.SystemType,column.Name) %> <%=column.Name %> { get; set; }
+        <%} }%>
+        #endregion
+        
+        #region 扩展属性
+        
+        #endregion
+        
+    }
+}
+
+<script runat="template">
+    /// <summary>
+    /// 格式化数据类型显示
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public string GetDataTypeString(Type type,string name)
+    {
+        switch(type.ToString())
+        {
+            case "System.Int64":
+                return "long";
+            case "System.Int32":
+                return "int";
+            case "System.Int16":
+                return "short";
+            case "System.String":
+                return "string";
+            case "System.SByte":
+                return "bool";
+            case "System.Decimal":
+                return GetDataType(name);
+            default:
+                return type.ToString().Replace("System.","");
+        }
+    }
+        
+    
+    public string GetDataType(string input){
+    
+        if(input.ToLower().Contains("id"))
+        {
+             return "decimal";
+        }
+        else
+        {
+             return "decimal";
+        }
+    }
+    
+    /// <summary>
+    /// 获取主键列
+    /// </summary>
+    /// <param name="table"></param>
+    /// <returns></returns>
+    public string GetPrimaryKeyColumn(TableSchema table)
+    {
+        foreach(ColumnSchema column in table.Columns)
+        {
+            if(column.IsPrimaryKeyMember)
+                return column.Name;
+        }
+        
+        return "";
+    }
+    
+    /// <summary>
+    /// 新建一个实例时各列的初始值
+    /// </summary>
+    /// <param name="table"></param>
+    /// <returns></returns>
+    public string NewInstanceColumnValue(TableSchema table)
+    {
+        string strColumnValue=string.Empty;
+        foreach(ColumnSchema column in table.Columns)
+        {
+            if((column.SystemType==typeof(System.Int16)||column.SystemType==typeof(System.Int32)||column.SystemType==typeof(System.Int64)) && !column.IsPrimaryKeyMember)
+            {
+                       if(column.Name=="CreateUserID"||column.Name=="UpdateUserID")
+                        {
+                            strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = UserContext.CurrentUser.UserID,";
+                        }
+                        else if(column.Name=="ClientID")
+                        {
+                            strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = UserContext.CurrentUser.ClientID,";
+                        }
+                        else
+                        {
+                            strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = 0,";
+                        }
+             }
+            
+            if(column.SystemType==typeof(System.String))
+            {
+                strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = string.Empty,";
+            }
+            
+            if(column.SystemType == typeof(System.DateTime))
+            {
+                strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = DateTimeUtil.GetNowDateTime(),";
+            }
+            
+            if(column.SystemType==typeof(System.Decimal))
+            {
+                strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = 0m,";
+            }
+            
+            if(column.SystemType==typeof(System.SByte))
+            {
+                strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = false,";
+            }
+            if(column.IsPrimaryKeyMember)
+            {
+                strColumnValue+=GetInstanceSplitString(strColumnValue)+column.Name +" = IdGenerator.Next(),";
+            }
+        }
+        
+        return strColumnValue.TrimEnd(',');
+    }
+    
+    /// <summary>
+    /// 各初始值之间的分隔
+    /// </summary>
+    /// <returns></returns>
+    public string GetInstanceSplitString(string strColumnValue)
+    {
+        if(strColumnValue.Length>0)
+            return "\r\n                ";
+        else
+            return string.Empty;
+    }
+    
+    public string GetNameSpace(TableSchema table)
+    {
+       if(table.Name.StartsWith("WM_"))
+        {
+            return "Scm.Oms.TDBL";
+        }
+        else
+            return "Scm.Oms.TDBL";
+    }
+    
+    public string FormatTableName(TableSchema table)
+    {
+        if(table.Name.Contains("_"))
+        {
+            if(table.Name.StartsWith("Rpt"))
+            {
+                return "Rpt"+table.Name.Substring(table.Name.IndexOf("_")+1,table.Name.Length-table.Name.IndexOf("_")-1);
+            }
+            
+            return table.Name.Substring(table.Name.IndexOf("_")+1,table.Name.Length-table.Name.IndexOf("_")-1);
+        }
+            
+        else
+            return table.Name;
+    }
+	
+	/// <summary>
+    /// 获取表描述信息
+    /// </summary>
+    /// <returns></returns>
+    public string GetTableDescription(TableSchema table)
+    {
+        if(table == null) return string.Empty;
+        string result;
+        using (OracleConnection conn = new OracleConnection(table.Database.ConnectionString))
+        {
+            using (OracleCommand comm = new OracleCommand("select Comments from user_tab_comments where table_name= '" + table.Name + "'", conn))
+            {
+                conn.Open();
+                result = Convert.ToString(comm.ExecuteScalar());
+            }
+        }
+        return result;
+    }
+</script>

@@ -1,0 +1,72 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" Src="" Inherits="" Debug="False" LinePragmas="True" Description="根据选择的数据库或表生成仓储类" ResponseEncoding="UTF-8" %>
+<%@ Property Name="TableName" Type="SchemaExplorer.TableSchema" Default="" Optional="False" Category="" Description="选择需要生成的指定表的仓储类" OnChanged="" Editor="" EditorBase="" Serializer="" %>
+<%@ Property Name="Namespace" Type="String" Default="" Optional="False" Category="" Description="命名空间" OnChanged="" Editor="" EditorBase="" Serializer="" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using JG.Core;
+using JG.Core.Repository;
+using JG.Core.Cache;
+using PetaPoco;
+using Scm.Component.SecurityModel;
+using Scm.Component.Common;
+
+namespace <%=Namespace %>
+{
+    public interface I<%=FormatTableName(TableName) %>Repository : IRepository<<%=FormatTableName(TableName) %>Entity>
+    {
+        PageDataSet<<%=FormatTableName(TableName) %>Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex); 
+    }
+
+    public class <%=FormatTableName(TableName) %>Repository : ExtRepository<<%=FormatTableName(TableName) %>Entity>,I<%=FormatTableName(TableName) %>Repository
+    {
+        public  PageDataSet<<%=FormatTableName(TableName) %>Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)
+        {
+         return this.GetPageEntities(pageSize, pageIndex, CachingExpirationType.ObjectCollection, () =>
+           {
+               StringBuilder stringBuilder = new StringBuilder();
+               stringBuilder.Append(CacheHelper.GetListCacheKeyPrefix(CacheVersionType.AreaVersion, "ClientID", UserContext.CurrentUser.ClientID))
+                   .Append("GetList")
+                   .Append(queryModel.GetConditionCacheKey());
+               return stringBuilder.ToString();
+           },
+               () =>
+               {
+                   Sql sql = queryModel.GetConditionSql().Append(queryModel.GetOrderSql());
+                   return sql;
+               });
+        }
+    }
+}
+
+<script runat="template">
+    public string GetNameSpace(TableSchema table)
+    {
+        if(table.Name.StartsWith("TD_"))
+        {
+            return "Scm.Oms.TDBL";
+        }
+        else
+            return "Scm.Oms.TBL";
+    }
+    
+    public string FormatTableName(TableSchema table)
+    {
+        if(table.Name.Contains("_"))
+        {
+            if(table.Name.StartsWith("Rpt"))
+            {
+                return "Rpt"+table.Name.Substring(table.Name.IndexOf("_")+1,table.Name.Length-table.Name.IndexOf("_")-1);
+            }
+            
+            return table.Name.Substring(table.Name.IndexOf("_")+1,table.Name.Length-table.Name.IndexOf("_")-1);
+        }
+            
+        else
+            return table.Name;
+    }
+</script>

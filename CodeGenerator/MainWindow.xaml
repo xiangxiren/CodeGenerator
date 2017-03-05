@@ -1,0 +1,103 @@
+﻿<Window x:Class="CodeGenerator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pdm="clr-namespace:CodeGenerator.Pdm"
+        Title="代码生成" 
+        MinHeight="700" 
+        Height="700" 
+        Width="1200" 
+        MinWidth="1200" 
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
+        Icon="/CodeGenerator;component/House.ico">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_文件">
+                <MenuItem Header="打开" Click="MenuItem_OnClick" Name="MenuOpenFile"/>
+                <!--                <Separator />-->
+                <!--                <MenuItem Header="Sen_d To">-->
+                <!--                    <MenuItem Header="Mail Recipient"/>-->
+                <!--                    <MenuItem Header="My Documents" />-->
+                <!--                </MenuItem>-->
+            </MenuItem>
+            <MenuItem Header="_工具">
+                <MenuItem Header="单表生成" Click="MenuItem_OnClick" Name="MenuSingleTable"/>
+                <MenuItem Header="批量生成" Click="MenuItem_OnClick" Name="MenuBatchGenerate"/>
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="450"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.RowSpan="2" Grid.Column="0">
+                <TreeView Name="TwLeaf" TreeViewItem.Selected="TwLeaf_OnSelected">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}"></Setter>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type pdm:TreeModel}"  ItemsSource="{Binding Children}">
+                            <StackPanel  Margin="-2,0,0,0" Orientation="Horizontal" x:Name="staTree">
+                                <Image VerticalAlignment="Center" Source="{Binding ImageSource}" Margin="0 0 5 0" ></Image>
+                                <TextBlock Text="{Binding Name}"></TextBlock>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
+            <DataGrid x:Name="ColumnDataGrid" ItemsSource="{Binding}" CanUserAddRows="False"
+                          AutoGenerateColumns="False" Grid.Row="0" Grid.Column="1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding Name}"  IsReadOnly="True"
+                                            CanUserSort="False" />
+                    <DataGridTextColumn Header="Code" Width="200" Binding="{Binding Code}" IsReadOnly="True"
+                                            CanUserSort="False" />
+                    <DataGridTextColumn Header="Comment" Width="*" Binding="{Binding Comment}" IsReadOnly="True"
+                                            CanUserSort="False" />
+                    <DataGridTextColumn Header="DataType" Width="200" Binding="{Binding DataType}" IsReadOnly="True" 
+                                            CanUserSort="False" />
+                    <DataGridTextColumn Header="Length" Width="100" Binding="{Binding Length}" IsReadOnly="True"
+                                            CanUserSort="False" />
+                    <DataGridTemplateColumn Header="PrimaryKey" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding PrimaryKey}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="IsNull" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsNull}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Identity" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Identity}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Mandatory" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Mandatory}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>

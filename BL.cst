@@ -1,0 +1,83 @@
+﻿<%@ CodeTemplate Language="C#" TargetLanguage="C#" Src="" Inherits="" Debug="False" LinePragmas="True" Description="根据选择的数据库或表生成逻辑类" ResponseEncoding="UTF-8" %>
+<%@ Property Name="TableName" Type="SchemaExplorer.TableSchema" Default="" Optional="False" Category="" Description="选择需要生成的指定表的逻辑类" OnChanged="" Editor="" EditorBase="" Serializer="" %>
+<%@ Property Name="Namespace" Type="String" Default="" Optional="False" Category="" Description="命名空间" OnChanged="" Editor="" EditorBase="" Serializer="" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Scm.Component.Common;
+using Scm.Component.SecurityModel;
+using JG.Core;
+
+namespace <%=Namespace %>
+{
+    public class <%=FormatTableName(TableName) %>BL
+    {
+        private I<%=FormatTableName(TableName) %>Repository m<%=FormatTableName(TableName) %>Repository = null;
+
+        #region 构造函数
+        public <%=FormatTableName(TableName) %>BL()
+            : this(new <%=FormatTableName(TableName) %>Repository())
+        { 
+            
+        }
+
+        public <%=FormatTableName(TableName) %>BL(I<%=FormatTableName(TableName) %>Repository repository)
+        {
+            this.m<%=FormatTableName(TableName) %>Repository = repository ?? new <%=FormatTableName(TableName) %>Repository();    
+        }
+        #endregion
+
+        #region 业务逻辑
+        public <%=FormatTableName(TableName) %>Entity Get(object ID,bool isCopy=false)
+        {
+            var entity = this.m<%=FormatTableName(TableName) %>Repository.Get(ID);
+            return entity != null && isCopy ? DataProcess.CloneObject(entity) : entity;
+        }
+        
+       public PageDataSet<<%=FormatTableName(TableName) %>Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)
+        {
+            return this.m<%=FormatTableName(TableName) %>Repository.GetList(queryModel,pageSize,pageIndex);
+        }
+        
+        public <%=FormatTableName(TableName) %>Entity Update(<%=FormatTableName(TableName) %>Entity entity){
+           entity.UpdateUserID = UserContext.CurrentUser.UserID;
+            entity.UpdateDate = DateTimeUtil.GetNowDateTime();
+            this.m<%=FormatTableName(TableName) %>Repository.Update(entity);
+            return entity;
+        }
+        
+        #endregion
+    }
+}
+
+<script runat="template">
+   public string GetNameSpace(TableSchema table)
+    {
+        if(table.Name.StartsWith("TD_"))
+        {
+            return "Scm.Oms.TDBL";
+        }
+        else
+            return "Scm.Oms.TDBL";
+    }
+    
+    public string FormatTableName(TableSchema table)
+    {
+        if(table.Name.Contains("_"))
+        {
+            if(table.Name.StartsWith("Rpt"))
+            {
+                return "Rpt"+table.Name.Substring(table.Name.IndexOf("_")+1,table.Name.Length-table.Name.IndexOf("_")-1);
+            }
+            
+            return table.Name.Substring(table.Name.IndexOf("_")+1,table.Name.Length-table.Name.IndexOf("_")-1);
+        }
+            
+        else
+            return table.Name;
+    }
+</script>
