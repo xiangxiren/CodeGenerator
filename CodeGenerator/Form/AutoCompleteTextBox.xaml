@@ -1,0 +1,4 @@
+﻿<Canvas x:Class="CodeGenerator.Form.AutoCompleteTextBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Height="30" Width="300">
+</Canvas>

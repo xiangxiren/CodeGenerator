@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CodeGenerator.AutoComplete;
 using CodeGenerator.Generate;
 using CodeGenerator.Pdm;
 using Microsoft.Win32;
 using MessageBox = System.Windows.MessageBox;
 
-namespace CodeGenerator
+namespace CodeGenerator.Form
 {
     /// <summary>
     ///     MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow
     {
-        private const string ImageTable = "Image/table.png";
-        private const string ImagePackage = "Image/package.png";
+        private const string ImageTable = "/Image/table.png";
+        private const string ImagePackage = "/Image/package.png";
 
         private List<TableInfo> _tableInfos;
+        private List<AutoCompleteEntry> _autoCompleteEntries;
 
         #region 构造函数
 
@@ -95,37 +96,39 @@ namespace CodeGenerator
             var pdmReader = new PdmReader(filePath);
             pdmReader.InitData();
 
-            var roots = new List<TreeModel>();
+            var treeModels = new List<TreeModel>();
 
             foreach (var model in pdmReader.Models)
             {
-                var node = new TreeModel { Id = model.Id, Name = model.Name, NodeType = NodeType.Model, ImageSource = ImagePackage, IsExpanded = true };
+                var node = new TreeModel { Id = model.Id, Name = model.Name, NodeType = NodeType.Model, Icon = ImagePackage, IsExpanded = true };
 
                 if (model.PackageInfos != null)
-                    node.Children = GetNodeFromPackageInfo(model.PackageInfos);
+                    node.Children = GetNodeFromPackageInfo(node, model.PackageInfos);
 
-                roots.Add(node);
+                treeModels.Add(node);
             }
 
-            TwLeaf.ItemsSource = roots;
+            TwLeaf.ItemsSource = treeModels;
             _tableInfos = pdmReader.Tables;
             if (_tableInfos != null && _tableInfos.Count > 0)
             {
                 var firstOrDefault = _tableInfos.FirstOrDefault();
                 if (firstOrDefault != null) BindColumnDataGrid(firstOrDefault.Id);
             }
+
+            GetAutoCompleteEntrys(treeModels);
         }
 
-        private List<TreeModel> GetNodeFromPackageInfo(List<PackageInfo> packageInfos)
+        private List<TreeModel> GetNodeFromPackageInfo(TreeModel parent, List<PackageInfo> packageInfos)
         {
             var nodes = new List<TreeModel>();
             if (packageInfos == null) return nodes;
 
             foreach (var package in packageInfos)
             {
-                var node = new TreeModel { Id = package.Id, Name = package.Name, NodeType = NodeType.Package, ImageSource = ImagePackage, Children = new List<TreeModel>() };
+                var node = new TreeModel { Id = package.Id, Name = package.Name, NodeType = NodeType.Package, Icon = ImagePackage, Parent = parent };
                 if (package.PackageInfos != null)
-                    node.Children.AddRange(GetNodeFromPackageInfo(package.PackageInfos));
+                    node.Children.AddRange(GetNodeFromPackageInfo(node, package.PackageInfos));
 
                 if (package.TableInfos != null)
                     node.Children.AddRange(
@@ -136,7 +139,8 @@ namespace CodeGenerator
                                     Id = table.Id,
                                     Name = string.Format("{0}({1})", table.Code, table.Name),
                                     NodeType = NodeType.Table,
-                                    ImageSource = ImageTable
+                                    Icon = ImageTable,
+                                    Parent = node
                                 }));
 
                 nodes.Add(node);
@@ -148,6 +152,26 @@ namespace CodeGenerator
         #endregion
 
         #region 事件交互
+
+        private void MenuExpandAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (TwLeaf.ItemsSource == null) return;
+            foreach (TreeModel tree in TwLeaf.ItemsSource)
+            {
+                tree.IsExpanded = true;
+                tree.SetChildrenExpanded(true);
+            }
+        }
+
+        private void MenuUnExpandAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (TwLeaf.ItemsSource == null) return;
+            foreach (TreeModel tree in TwLeaf.ItemsSource)
+            {
+                tree.IsExpanded = false;
+                tree.SetChildrenExpanded(false);
+            }
+        }
 
         private void TwLeaf_OnSelected(object sender, RoutedEventArgs e)
         {
@@ -215,6 +239,8 @@ namespace CodeGenerator
                     GenerateSingleTable();
                 else if (Keyboard.IsKeyDown(Key.B))
                     GenerateBatchGenerate();
+                else if (Keyboard.IsKeyDown(Key.F))
+                    FindTreeNode();
             }
         }
 
@@ -320,6 +346,77 @@ namespace CodeGenerator
             }
 
             return tables;
+        }
+
+        private void FindTreeNode()
+        {
+            var window = new SearchTableWindow(_autoCompleteEntries)
+            {
+                Owner = this
+            };
+            var result = window.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                ExpandTreeNode(window.SelectedNodeId);
+            }
+        }
+
+        private void GetAutoCompleteEntrys(IEnumerable<TreeModel> treeModels)
+        {
+            _autoCompleteEntries = new List<AutoCompleteEntry>();
+            foreach (var treeModel in treeModels)
+            {
+                var list = GetAutoCompleteEntrys(treeModel);
+                if (list != null && list.Count > 0)
+                    _autoCompleteEntries.AddRange(list);
+            }
+        }
+
+        private List<AutoCompleteEntry> GetAutoCompleteEntrys(TreeModel treeModel)
+        {
+            var list = new List<AutoCompleteEntry>();
+            if (treeModel == null) return list;
+            list.Add(new AutoCompleteEntry(treeModel.Id, treeModel.Name, null));
+
+            if (treeModel.Children == null || treeModel.Children.Count <= 0) return list;
+
+            foreach (var child in treeModel.Children)
+            {
+                var childs = GetAutoCompleteEntrys(child);
+                if (childs != null && childs.Count > 0)
+                    list.AddRange(childs);
+            }
+
+            return list;
+        }
+
+        private void ExpandTreeNode(string id)
+        {
+            if (TwLeaf.ItemsSource == null) return;
+
+            var model = GetSelectedTreeModel(TwLeaf.ItemsSource.Cast<TreeModel>(), id);
+
+            if (model != null)
+                SetParentIsExpanded(model, true);
+        }
+
+        private TreeModel GetSelectedTreeModel(IEnumerable<TreeModel> treeModels, string id)
+        {
+            foreach (TreeModel treeModel in treeModels)
+            {
+                if (treeModel.Id == id) return treeModel;
+                if (treeModel.Children != null && treeModel.Children.Count > 0)
+                    return GetSelectedTreeModel(treeModel.Children, id);
+
+            }
+            return null;
+        }
+
+        private void SetParentIsExpanded(TreeModel treeModel, bool isExpanded)
+        {
+            if (treeModel == null) return;
+            treeModel.IsExpanded = isExpanded;
+            SetParentIsExpanded(treeModel.Parent, isExpanded);
         }
 
         #endregion

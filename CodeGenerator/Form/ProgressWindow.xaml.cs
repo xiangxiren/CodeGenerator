@@ -6,7 +6,7 @@ using System.Windows.Threading;
 using CodeGenerator.Generate;
 using CodeGenerator.Pdm;
 
-namespace CodeGenerator
+namespace CodeGenerator.Form
 {
     /// <summary>
     /// ProgressWindow.xaml 的交互逻辑

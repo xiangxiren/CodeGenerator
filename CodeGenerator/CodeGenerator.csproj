@@ -59,11 +59,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="GenerateArgumentWindow.xaml">
+    <Compile Include="AutoComplete\AutoCompleteEntry.cs" />
+    <Compile Include="AutoComplete\ComboBoxItemEx.cs" />
+    <Compile Include="Form\SearchTableWindow.xaml.cs">
+      <DependentUpon>SearchTableWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Form\GenerateArgumentWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Form\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -71,8 +76,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GenerateArgumentWindow.xaml.cs">
+    <Compile Include="Form\GenerateArgumentWindow.xaml.cs">
       <DependentUpon>GenerateArgumentWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Form\AutoCompleteTextBox.xaml.cs">
+      <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Generate\BlGenerateCode.cs" />
     <Compile Include="Generate\EntityGenerateCode.cs" />
@@ -80,11 +88,19 @@
     <Compile Include="Generate\GenerateCodeBase.cs" />
     <Compile Include="Generate\RepositoryGenerateCode.cs" />
     <Compile Include="Generate\WebModelGenerateCode.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Form\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ProgressWindow.xaml">
+    <Page Include="Form\ProgressWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Form\SearchTableWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Form\AutoCompleteTextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -100,9 +116,10 @@
     <Compile Include="Pdm\KeyInfo.cs" />
     <Compile Include="Pdm\PdmReader.cs" />
     <Compile Include="Pdm\TableInfo.cs" />
-    <Compile Include="ProgressWindow.xaml.cs">
+    <Compile Include="Form\ProgressWindow.xaml.cs">
       <DependentUpon>ProgressWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -143,6 +160,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Log\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\search.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

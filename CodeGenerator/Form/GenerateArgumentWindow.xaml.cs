@@ -8,7 +8,7 @@ using System.Windows.Input;
 using CodeGenerator.Generate;
 using CodeGenerator.Pdm;
 
-namespace CodeGenerator
+namespace CodeGenerator.Form
 {
     /// <summary>
     ///     EahouseListWindow.xaml 的交互逻辑
@@ -132,15 +132,13 @@ namespace CodeGenerator
         private void WriteGenerateArgumentFile()
         {
             using (var fs = new FileStream(GenerateArgumentConfigPath, FileMode.Create))
+            using (var sw = new StreamWriter(fs))
             {
-                using (var sw = new StreamWriter(fs))
+                foreach (var argument in GenerateArguments)
                 {
-                    foreach (var argument in GenerateArguments)
-                    {
-                        sw.WriteLine("{0},{1},{2}", argument.GenerateType, argument.ClassNamespace, argument.FileSavePath);
-                    }
-                    sw.Flush();
+                    sw.WriteLine("{0},{1},{2}", argument.GenerateType, argument.ClassNamespace, argument.FileSavePath);
                 }
+                sw.Flush();
             }
         }
 

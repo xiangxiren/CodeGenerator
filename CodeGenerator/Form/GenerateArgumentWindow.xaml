@@ -1,4 +1,4 @@
-﻿<Window x:Class="CodeGenerator.GenerateArgumentWindow"
+﻿<Window x:Class="CodeGenerator.Form.GenerateArgumentWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="生成参数" 
