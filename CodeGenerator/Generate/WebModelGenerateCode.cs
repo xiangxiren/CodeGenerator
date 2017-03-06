@@ -92,7 +92,10 @@ namespace CodeGenerator.Generate
                         c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
                     {
                         var columnType = columnInfo.GetColumnType();
-                        sw.WriteLine("            entity.{0} = model.{0}{1};", columnInfo.Code, columnType == "decimal" || columnType == "DateTime" ? ".Value" : "");
+                        if (columnType == "string")
+                            sw.WriteLine("            entity.{0} = model.{0};", columnInfo.Code);
+                        else
+                            sw.WriteLine("            if (model.{0}.HasValue) entity.{0} = model.{0}.Value;", columnInfo.Code);
                     }
 
                     sw.WriteLine();
