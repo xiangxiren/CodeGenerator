@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using CodeGenerator.Generate;
 using CodeGenerator.Pdm;
 using Microsoft.Win32;
@@ -201,6 +203,19 @@ namespace CodeGenerator
             }
 
             GenerateCode(selectedItem);
+        }
+
+        private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if ((Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                if (Keyboard.IsKeyDown(Key.O))
+                    OpenFile();
+                else if (Keyboard.IsKeyDown(Key.S))
+                    GenerateSingleTable();
+                else if (Keyboard.IsKeyDown(Key.B))
+                    GenerateBatchGenerate();
+            }
         }
 
         #endregion

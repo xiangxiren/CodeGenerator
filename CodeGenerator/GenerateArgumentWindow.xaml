@@ -11,7 +11,8 @@
         WindowStartupLocation="CenterScreen" 
         ShowInTaskbar="False"
         ResizeMode="NoResize"
-        Icon="/CodeGenerator;component/House.ico">
+        Icon="/CodeGenerator;component/House.ico"
+        KeyDown="GenerateArgumentWindow_OnKeyDown">
     
     <Grid HorizontalAlignment="Right" Width="712">
         <Grid.RowDefinitions>

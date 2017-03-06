@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using CodeGenerator.Generate;
 using CodeGenerator.Pdm;
 
@@ -61,7 +62,7 @@ namespace CodeGenerator
         {
             if (filePathTextBox == null) return;
 
-            var mDialog = new System.Windows.Forms.FolderBrowserDialog {SelectedPath = filePathTextBox.Text};
+            var mDialog = new System.Windows.Forms.FolderBrowserDialog { SelectedPath = filePathTextBox.Text };
             var result = mDialog.ShowDialog();
 
             if (result == System.Windows.Forms.DialogResult.Cancel) return;
@@ -116,6 +117,12 @@ namespace CodeGenerator
             });
 
             return true;
+        }
+
+        private void GenerateArgumentWindow_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.Escape))
+                Close();
         }
 
         #endregion

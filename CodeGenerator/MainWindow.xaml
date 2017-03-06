@@ -12,7 +12,8 @@
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         mc:Ignorable="d"
-        Icon="/CodeGenerator;component/House.ico">
+        Icon="/CodeGenerator;component/House.ico"
+        KeyDown="MainWindow_OnKeyDown">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
@@ -20,7 +21,7 @@
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="_文件">
-                <MenuItem Header="打开" Click="MenuItem_OnClick" Name="MenuOpenFile"/>
+                <MenuItem Header="打开                 Ctrl+O" Click="MenuItem_OnClick" Name="MenuOpenFile"/>
                 <!--                <Separator />-->
                 <!--                <MenuItem Header="Sen_d To">-->
                 <!--                    <MenuItem Header="Mail Recipient"/>-->
@@ -28,8 +29,8 @@
                 <!--                </MenuItem>-->
             </MenuItem>
             <MenuItem Header="_工具">
-                <MenuItem Header="单表生成" Click="MenuItem_OnClick" Name="MenuSingleTable"/>
-                <MenuItem Header="批量生成" Click="MenuItem_OnClick" Name="MenuBatchGenerate"/>
+                <MenuItem Header="单表生成                 Ctrl+S" Click="MenuItem_OnClick" Name="MenuSingleTable"/>
+                <MenuItem Header="批量生成                 Ctrl+B" Click="MenuItem_OnClick" Name="MenuBatchGenerate"/>
             </MenuItem>
         </Menu>
         <Grid Grid.Row="1">
