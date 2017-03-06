@@ -15,13 +15,10 @@ namespace CodeGenerator.Generate
                 {
                     #region using
 
-                    sw.WriteLine("using System;");
                     sw.WriteLine("using System.Collections.Generic;");
                     sw.WriteLine("using System.Linq;");
-                    sw.WriteLine("using System.ComponentModel.DataAnnotations;");
                     sw.WriteLine("using Scm.Component.Common;");
-                    sw.WriteLine("using JG.Core;");
-                    sw.WriteLine("using Newtonsoft.Json;\r\n");
+                    sw.WriteLine();
 
                     #endregion
 
@@ -39,17 +36,19 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("        #region 属性");
                     foreach (var columnInfo in tableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
                     {
+                        var columnType = columnInfo.GetColumnType();
                         sw.WriteLine();
                         sw.WriteLine("        /// <summary>");
                         sw.WriteLine("        /// {0}", columnInfo.Comment);
                         sw.WriteLine("        /// </summary>");
-                        if (columnInfo.GetColumnType() == "string")
+                        if (columnType == "string")
                             sw.WriteLine("        [StringLength({0}), ErrorMessage = \"{1}长度不能超过{2}\")]", columnInfo.Length,
                                 string.IsNullOrEmpty(columnInfo.Comment) ||
                                 string.IsNullOrEmpty(columnInfo.Comment.Trim())
                                     ? columnInfo.Code
                                     : columnInfo.Comment, columnInfo.Length);
-                        sw.WriteLine("        public {0} {1} {2} get; set; {3}", columnInfo.GetColumnType(),
+                        sw.WriteLine("        public {0} {1} {2} get; set; {3}",
+                            columnType == "string" ? columnType : columnType + "?",
                             columnInfo.Code, "{", "}");
                     }
                     sw.WriteLine();

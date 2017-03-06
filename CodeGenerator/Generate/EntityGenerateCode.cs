@@ -16,11 +16,10 @@ namespace CodeGenerator.Generate
                     #region using
 
                     sw.WriteLine("using System;");
-                    sw.WriteLine("using JG.Core;");
                     sw.WriteLine("using JG.Core.Cache;");
                     sw.WriteLine("using PetaPoco;");
-                    sw.WriteLine("using Scm.Component.SecurityModel;");
-                    sw.WriteLine("using Scm.Component.Common;\r\n");
+                    sw.WriteLine("using Scm.Component.Common;");
+                    sw.WriteLine();
 
                     #endregion
 

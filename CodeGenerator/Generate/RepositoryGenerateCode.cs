@@ -14,16 +14,13 @@ namespace CodeGenerator.Generate
                 {
                     #region using
 
-                    sw.WriteLine("using System;");
-                    sw.WriteLine("using System.Collections.Generic;");
-                    sw.WriteLine("using System.Linq;");
                     sw.WriteLine("using System.Text;");
                     sw.WriteLine("using JG.Core;");
                     sw.WriteLine("using JG.Core.Repository;");
                     sw.WriteLine("using JG.Core.Cache;");
-                    sw.WriteLine("using PetaPoco;");
                     sw.WriteLine("using Scm.Component.Common;");
-                    sw.WriteLine("using Scm.Component.SecurityModel;\r\n");
+                    sw.WriteLine("using Scm.Component.SecurityModel;");
+                    sw.WriteLine();
 
                     #endregion
 

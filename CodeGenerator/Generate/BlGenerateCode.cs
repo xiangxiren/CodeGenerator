@@ -14,13 +14,10 @@ namespace CodeGenerator.Generate
                 {
                     #region using
 
-                    sw.WriteLine("using System;");
-                    sw.WriteLine("using System.Collections.Generic;");
-                    sw.WriteLine("using System.Linq;");
-                    sw.WriteLine("using System.Text;");
                     sw.WriteLine("using JG.Core;");
                     sw.WriteLine("using Scm.Component.Common;");
-                    sw.WriteLine("using Scm.Component.SecurityModel;\r\n");
+                    sw.WriteLine("using Scm.Component.SecurityModel;");
+                    sw.WriteLine();
 
                     #endregion
 
@@ -31,7 +28,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("    /// </summary>");
                     sw.WriteLine("    public class {0}BL", formatTableName);
                     sw.WriteLine("    {");
-                    sw.WriteLine("        private I{0}Repository m{0}Repository = null;", formatTableName);
+                    sw.WriteLine("        private readonly I{0}Repository m{0}Repository;", formatTableName);
                     sw.WriteLine();
                     sw.WriteLine("        #region 构造函数");
                     sw.WriteLine();
