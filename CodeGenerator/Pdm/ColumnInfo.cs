@@ -18,8 +18,6 @@ namespace CodeGenerator.Pdm
 
         public bool PrimaryKey { get; set; }
 
-        public bool IsNull { get; set; }
-
         public string GetColumnType()
         {
             if (DataType.ToUpper().Contains("VARCHAR")) return "string";

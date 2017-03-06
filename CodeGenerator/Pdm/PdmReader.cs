@@ -258,17 +258,27 @@ namespace CodeGenerator.Pdm
                     var element = (XmlElement)node;
                     property.SetValue(info, element.GetAttribute("Id"));
                 }
-                var childNode = childNodes.FirstOrDefault(o => o.Name == "a:" + property.Name);
-                if (childNode == null) continue;
-
-                switch (property.PropertyType.FullName)
+                else if (property.Name == "Mandatory")
                 {
-                    case "System.Int32":
-                        property.SetValue(info, Convert.ToInt32(childNode.InnerText));
-                        break;
-                    default:
-                        property.SetValue(info, childNode.InnerText);
-                        break;
+                    var mandatoryNode = childNodes.FirstOrDefault(o => o.Name == "a:Column.Mandatory");
+                    if (mandatoryNode == null) continue;
+
+                    property.SetValue(info, Convert.ToBoolean(Convert.ToInt32(mandatoryNode.InnerText)));
+                }
+                else
+                {
+                    var childNode = childNodes.FirstOrDefault(o => o.Name == "a:" + property.Name);
+                    if (childNode == null) continue;
+
+                    switch (property.PropertyType.FullName)
+                    {
+                        case "System.Int32":
+                            property.SetValue(info, Convert.ToInt32(childNode.InnerText));
+                            break;
+                        default:
+                            property.SetValue(info, childNode.InnerText);
+                            break;
+                    }
                 }
             }
         }

@@ -52,7 +52,6 @@ namespace CodeGenerator
                         k.Columns.ForEach(c =>
                         {
                             c.PrimaryKey = true;
-                            c.IsNull = false;
                         });
                     });
                 }
