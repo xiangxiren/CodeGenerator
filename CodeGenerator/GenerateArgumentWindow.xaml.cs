@@ -61,8 +61,7 @@ namespace CodeGenerator
         {
             if (filePathTextBox == null) return;
 
-            var mDialog = new System.Windows.Forms.FolderBrowserDialog();
-            mDialog.SelectedPath = filePathTextBox.Text;
+            var mDialog = new System.Windows.Forms.FolderBrowserDialog {SelectedPath = filePathTextBox.Text};
             var result = mDialog.ShowDialog();
 
             if (result == System.Windows.Forms.DialogResult.Cancel) return;

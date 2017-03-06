@@ -28,7 +28,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("{");
                     sw.WriteLine("    /// <summary>");
                     sw.WriteLine("    /// {0}", table.Comment);
-                    sw.WriteLine("    /// <summary>");
+                    sw.WriteLine("    /// </summary>");
                     sw.WriteLine("    [Serializable]");
                     sw.WriteLine("    [TableName(\"{0}\")]", table.Code);
                     sw.WriteLine("    [PrimaryKey(\"{0}\", autoIncrement = false)]", table.GetPrimaryKeyColumnName());
@@ -66,7 +66,7 @@ namespace CodeGenerator.Generate
                         sw.WriteLine();
                         sw.WriteLine("        /// <summary>");
                         sw.WriteLine("        /// {0}", columnInfo.Comment);
-                        sw.WriteLine("        /// <summary>");
+                        sw.WriteLine("        /// </summary>");
                         sw.WriteLine("        public {0} {1} {2} get; set; {3}", columnInfo.GetColumnType(), columnInfo.Code, "{", "}");
                     }
                     sw.WriteLine();

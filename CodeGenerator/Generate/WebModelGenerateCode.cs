@@ -37,12 +37,12 @@ namespace CodeGenerator.Generate
                     #region 属性
 
                     sw.WriteLine("        #region 属性");
-                    foreach (var columnInfo in tableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code)))
+                    foreach (var columnInfo in tableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
                     {
                         sw.WriteLine();
                         sw.WriteLine("        /// <summary>");
                         sw.WriteLine("        /// {0}", columnInfo.Comment);
-                        sw.WriteLine("        /// <summary>");
+                        sw.WriteLine("        /// </summary>");
                         if (columnInfo.GetColumnType() == "string")
                             sw.WriteLine("        [StringLength({0}), ErrorMessage = \"{1}长度不能超过{2}\")]", columnInfo.Length,
                                 string.IsNullOrEmpty(columnInfo.Comment) ||
@@ -84,18 +84,18 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("        {");
                     sw.WriteLine("            var entity = new {0}BL().Get(model.{1}, true);", formatTableName, tableInfo.GetPrimaryKeyColumnName());
                     sw.WriteLine("            DataProcess.InitModel(model);");
-                    sw.WriteLine("            if(entity == null)");
+                    sw.WriteLine("            if (entity == null)");
                     sw.WriteLine("            {");
                     sw.WriteLine("                entity = {0}Entity.New();", formatTableName);
+                    sw.WriteLine("            }");
 
                     foreach (var columnInfo in tableInfo.ColumnInfos.Where(
                         c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
                     {
                         var columnType = columnInfo.GetColumnType();
-                        sw.WriteLine("                entity.{0} = model.{0}{1};", columnInfo.Code, columnType == "decimal" || columnType == "DateTime" ? ".Value" : "");
+                        sw.WriteLine("            entity.{0} = model.{0}{1};", columnInfo.Code, columnType == "decimal" || columnType == "DateTime" ? ".Value" : "");
                     }
 
-                    sw.WriteLine("            }");
                     sw.WriteLine();
                     sw.WriteLine("            return entity;");
                     sw.WriteLine("        }");
@@ -111,7 +111,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine();
                     sw.WriteLine("        public static {0}WebModel AsWebModel(this {0}Entity entity, bool isEdit = true)", formatTableName);
                     sw.WriteLine("        {");
-                    sw.WriteLine("            if(entity == null) return null;");
+                    sw.WriteLine("            if (entity == null) return null;");
                     sw.WriteLine("            var model = new {0}WebModel();", formatTableName);
                     sw.WriteLine("            model.Init(entity);");
 
@@ -125,7 +125,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("            return model;");
                     sw.WriteLine("        }");
                     sw.WriteLine();
-                    sw.WriteLine("        public static {0}WebModel> AsWebModel(this IEnumerable<{0}Entity> entities, bool isEdit = false)", formatTableName);
+                    sw.WriteLine("        public static IEnumerable<{0}WebModel> AsWebModel(this IEnumerable<{0}Entity> entities, bool isEdit = false)", formatTableName);
                     sw.WriteLine("        {");
                     sw.WriteLine("            return entities == null ? null : entities.Select(t => t.AsWebModel(isEdit)).Where(c => c != null);");
                     sw.WriteLine("        }");

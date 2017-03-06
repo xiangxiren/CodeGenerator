@@ -26,6 +26,9 @@ namespace CodeGenerator.Generate
 
                     sw.WriteLine("namespace {0}", classNamespace);
                     sw.WriteLine("{");
+                    sw.WriteLine("    /// <summary>");
+                    sw.WriteLine("    /// {0}BL", tableInfo.Comment);
+                    sw.WriteLine("    /// </summary>");
                     sw.WriteLine("    public class {0}BL", formatTableName);
                     sw.WriteLine("    {");
                     sw.WriteLine("        private I{0}Repository m{0}Repository = null;", formatTableName);
@@ -40,7 +43,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine();
                     sw.WriteLine("        public {0}BL(I{0}Repository repository)", formatTableName);
                     sw.WriteLine("        {");
-                    sw.WriteLine("            this.m{0}Repository = repository ?? new {0}Repository(); ", formatTableName);
+                    sw.WriteLine("            this.m{0}Repository = repository ?? new {0}Repository();", formatTableName);
                     sw.WriteLine("        }");
                     sw.WriteLine();
                     sw.WriteLine("        #endregion");
@@ -58,17 +61,16 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("            return this.m{0}Repository.GetList(queryModel, pageSize, pageIndex);", formatTableName);
                     sw.WriteLine("        }");
                     sw.WriteLine();
-                    sw.WriteLine("        public {0}Entity Update({0}Entity entity)");
+                    sw.WriteLine("        public {0}Entity Update({0}Entity entity)", formatTableName);
                     sw.WriteLine("        {");
                     sw.WriteLine("            entity.UpdateUserID = UserContext.CurrentUser.UserID;");
                     sw.WriteLine("            entity.UpdateDate = DateTimeUtil.GetNowDateTime();");
-                    sw.WriteLine("            this.m<%=FormatTableName(TableName) %>Repository.Update(entity);");
+                    sw.WriteLine("            this.m{0}Repository.Update(entity);", formatTableName);
                     sw.WriteLine("            return entity;");
                     sw.WriteLine("        }");
                     sw.WriteLine();
                     sw.WriteLine("        #endregion");
                     sw.WriteLine("    }");
-                    sw.WriteLine();
                     sw.Write("}");
                     sw.Flush();
                 }
