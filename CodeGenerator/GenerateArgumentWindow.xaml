@@ -47,7 +47,7 @@
             <TextBox Name="TxtEntityNamespace" Style="{StaticResource TxtStyle}"/>
 
             <TextBlock Text="保存目录:" Style="{StaticResource LabStyle}" Margin="5 0 0 0"/>
-            <TextBox Name="TxtEntityFilePath" Style="{StaticResource TxtStyle}" IsReadOnly="True"/>
+            <TextBox Name="TxtEntityFilePath" Style="{StaticResource TxtStyle}" />
 
             <Button Name="BtnEntityFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
@@ -58,7 +58,7 @@
             <TextBox Name="TxtWebModelNamespace" Style="{StaticResource TxtStyle}"/>
 
             <TextBlock Text="保存目录:" Style="{StaticResource LabStyle}" Margin="5 0 0 0"/>
-            <TextBox Name="TxtWebModelFilePath" Style="{StaticResource TxtStyle}" IsReadOnly="True"/>
+            <TextBox Name="TxtWebModelFilePath" Style="{StaticResource TxtStyle}" />
 
             <Button Name="BtnWebModelFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
@@ -69,7 +69,7 @@
             <TextBox Name="TxtRepositoryNamespace" Style="{StaticResource TxtStyle}"/>
 
             <TextBlock Text="保存目录:" Style="{StaticResource LabStyle}" Margin="5 0 0 0"/>
-            <TextBox Name="TxtRepositoryFilePath" Style="{StaticResource TxtStyle}" IsReadOnly="True"/>
+            <TextBox Name="TxtRepositoryFilePath" Style="{StaticResource TxtStyle}" />
 
             <Button Name="BtnRepositoryFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
@@ -80,7 +80,7 @@
             <TextBox Name="TxtBlNamespace" Style="{StaticResource TxtStyle}"/>
 
             <TextBlock Text="保存目录:" Style="{StaticResource LabStyle}" Margin="5 0 0 0"/>
-            <TextBox Name="TxtBlFilePath" Style="{StaticResource TxtStyle}" IsReadOnly="True"/>
+            <TextBox Name="TxtBlFilePath" Style="{StaticResource TxtStyle}" />
 
             <Button Name="BtnBlFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
