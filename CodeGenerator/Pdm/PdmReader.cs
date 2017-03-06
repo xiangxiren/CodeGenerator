@@ -111,7 +111,7 @@ namespace CodeGenerator.Pdm
                 packages.Add(package);
             }
 
-            return packages;
+            return packages.OrderBy(p => p.Code).ToList();
         }
 
         /// <summary>
