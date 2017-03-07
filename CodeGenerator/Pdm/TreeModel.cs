@@ -45,6 +45,7 @@ namespace CodeGenerator.Pdm
         {
             foreach (TreeModel child in Children)
             {
+                if (child.NodeType == NodeType.Table) continue;
                 child.IsExpanded = isExpanded;
                 child.SetChildrenExpanded(isExpanded);
             }
