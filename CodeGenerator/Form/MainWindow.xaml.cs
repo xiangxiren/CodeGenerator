@@ -401,8 +401,6 @@ namespace CodeGenerator.Form
                 model.IsSelected = true;
                 SetParentIsExpanded(model, true);
             }
-
-            BindColumnDataGrid(id);
         }
 
         #endregion
