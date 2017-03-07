@@ -100,7 +100,7 @@ namespace CodeGenerator.Form
 
             foreach (var model in pdmReader.Models)
             {
-                var node = new TreeModel { Id = model.Id, Name = model.Name, NodeType = NodeType.Model, Icon = ImagePackage, IsExpanded = true };
+                var node = new TreeModel { Id = model.Id, Name = model.Name, NodeType = NodeType.Model, Icon = ImagePackage, IsExpanded = true, IsSelected = true };
 
                 if (model.PackageInfos != null)
                     node.Children = GetNodeFromPackageInfo(node, model.PackageInfos);
