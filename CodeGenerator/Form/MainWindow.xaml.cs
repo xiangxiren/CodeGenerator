@@ -155,22 +155,12 @@ namespace CodeGenerator.Form
 
         private void MenuExpandAll_Click(object sender, RoutedEventArgs e)
         {
-            if (TwLeaf.ItemsSource == null) return;
-            foreach (TreeModel tree in TwLeaf.ItemsSource)
-            {
-                tree.IsExpanded = true;
-                tree.SetChildrenExpanded(true);
-            }
+            SetAllNodeIsExpanded(true);
         }
 
         private void MenuUnExpandAll_Click(object sender, RoutedEventArgs e)
         {
-            if (TwLeaf.ItemsSource == null) return;
-            foreach (TreeModel tree in TwLeaf.ItemsSource)
-            {
-                tree.IsExpanded = false;
-                tree.SetChildrenExpanded(false);
-            }
+            SetAllNodeIsExpanded(false);
         }
 
         private void TwLeaf_OnSelected(object sender, RoutedEventArgs e)
@@ -348,6 +338,11 @@ namespace CodeGenerator.Form
             return tables;
         }
 
+        #region 查找表节点
+
+        /// <summary>
+        /// 查找表
+        /// </summary>
         private void FindTreeNode()
         {
             var window = new SearchTableWindow(_autoCompleteEntries)
@@ -357,6 +352,7 @@ namespace CodeGenerator.Form
             var result = window.ShowDialog();
             if (result.HasValue && result.Value)
             {
+                SetAllNodeIsExpanded(false);
                 ExpandTreeNode(window.SelectedNodeId);
             }
         }
@@ -390,6 +386,10 @@ namespace CodeGenerator.Form
             return list;
         }
 
+        /// <summary>
+        /// 展开指定id的节点
+        /// </summary>
+        /// <param name="id"></param>
         private void ExpandTreeNode(string id)
         {
             if (TwLeaf.ItemsSource == null) return;
@@ -397,11 +397,22 @@ namespace CodeGenerator.Form
             var model = GetSelectedTreeModel(TwLeaf.ItemsSource.Cast<TreeModel>(), id);
 
             if (model != null)
+            {
+                model.IsSelected = true;
                 SetParentIsExpanded(model, true);
+            }
 
             BindColumnDataGrid(id);
         }
 
+        #endregion
+
+        /// <summary>
+        /// 通过表Id获取表节点
+        /// </summary>
+        /// <param name="treeModels"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private TreeModel GetSelectedTreeModel(IEnumerable<TreeModel> treeModels, string id)
         {
             foreach (var treeModel in treeModels)
@@ -414,11 +425,30 @@ namespace CodeGenerator.Form
             return null;
         }
 
+        /// <summary>
+        /// 设置父节点的展开状态
+        /// </summary>
+        /// <param name="treeModel"></param>
+        /// <param name="isExpanded"></param>
         private void SetParentIsExpanded(TreeModel treeModel, bool isExpanded)
         {
             if (treeModel == null) return;
             treeModel.IsExpanded = isExpanded;
             SetParentIsExpanded(treeModel.Parent, isExpanded);
+        }
+
+        /// <summary>
+        /// 设置节点是否展开
+        /// </summary>
+        /// <param name="isExpanded"></param>
+        private void SetAllNodeIsExpanded(bool isExpanded)
+        {
+            if (TwLeaf.ItemsSource == null) return;
+            foreach (TreeModel tree in TwLeaf.ItemsSource)
+            {
+                tree.IsExpanded = isExpanded;
+                tree.SetChildrenExpanded(isExpanded);
+            }
         }
 
         #endregion

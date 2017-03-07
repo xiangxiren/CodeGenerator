@@ -9,6 +9,8 @@ namespace CodeGenerator.Pdm
 
         private bool _isExpanded;
 
+        private bool _isSelected;
+
         public string Id { get; set; }
 
         public string Name { get; set; }
@@ -29,6 +31,17 @@ namespace CodeGenerator.Pdm
                 if (value == _isExpanded) return;
                 _isExpanded = value;
                 NotifyPropertyChanged("IsExpanded");
+            }
+        }
+
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                if (value == _isSelected) return;
+                _isSelected = value;
+                NotifyPropertyChanged("IsSelected");
             }
         }
 
