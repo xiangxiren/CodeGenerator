@@ -17,12 +17,17 @@
         {
             Id = id;
             DisplayName = name;
-            KeywordStrings = keywords;
+            SetKeywordStrings(keywords);
         }
 
         public override string ToString()
         {
             return DisplayName;
+        }
+
+        private void SetKeywordStrings(params string[] keywords)
+        {
+            KeywordStrings = keywords.Length > 0 ? keywords : new[] {DisplayName.ToUpper(), DisplayName.ToLower()};
         }
     }
 }
