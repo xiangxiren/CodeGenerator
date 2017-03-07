@@ -398,6 +398,8 @@ namespace CodeGenerator.Form
 
             if (model != null)
                 SetParentIsExpanded(model, true);
+
+            BindColumnDataGrid(id);
         }
 
         private TreeModel GetSelectedTreeModel(IEnumerable<TreeModel> treeModels, string id)

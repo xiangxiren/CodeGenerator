@@ -43,8 +43,14 @@
                     <TreeView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Name="MenuExpandAll" Header="全部展开" Click="MenuExpandAll_Click">
+                                <MenuItem.Icon>
+                                    <Image Source="/Image/unexpand.png" />
+                                </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Name="MenuUnExpandAll" Header="全部折叠" Click="MenuUnExpandAll_Click">
+                                <MenuItem.Icon>
+                                    <Image Source="/Image/expand.png" />
+                                </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
                     </TreeView.ContextMenu>
@@ -58,7 +64,7 @@
                             <StackPanel  Margin="-2,0,0,0" Orientation="Horizontal" x:Name="staTree">
                                 <StackPanel Orientation="Horizontal">
                                     <Image VerticalAlignment="Center" Source="{Binding Icon}" ></Image>
-                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                    <TextBlock Text="{Binding Name}" Margin="5,0,0,0"></TextBlock>
                                 </StackPanel>
                             </StackPanel>
                         </HierarchicalDataTemplate>

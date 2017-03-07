@@ -146,14 +146,14 @@
     <Resource Include="Image\table.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\expand.png" />
-    <Resource Include="Image\unExpand.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Log\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\search.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\expand.png" />
+    <Resource Include="Image\unexpand.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
