@@ -402,12 +402,12 @@ namespace CodeGenerator.Form
 
         private TreeModel GetSelectedTreeModel(IEnumerable<TreeModel> treeModels, string id)
         {
-            foreach (TreeModel treeModel in treeModels)
+            foreach (var treeModel in treeModels)
             {
                 if (treeModel.Id == id) return treeModel;
-                if (treeModel.Children != null && treeModel.Children.Count > 0)
-                    return GetSelectedTreeModel(treeModel.Children, id);
-
+                if (treeModel.Children == null || treeModel.Children.Count <= 0) continue;
+                var model = GetSelectedTreeModel(treeModel.Children, id);
+                if (model != null) return model;
             }
             return null;
         }
