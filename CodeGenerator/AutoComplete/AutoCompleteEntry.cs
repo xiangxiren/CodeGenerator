@@ -27,7 +27,9 @@
 
         private void SetKeywordStrings(params string[] keywords)
         {
-            KeywordStrings = keywords.Length > 0 ? keywords : new[] {DisplayName.ToUpper(), DisplayName.ToLower()};
+            KeywordStrings = keywords == null && !string.IsNullOrEmpty(DisplayName)
+                ? new[] {DisplayName.ToUpper(), DisplayName.ToLower()}
+                : keywords;
         }
     }
 }
