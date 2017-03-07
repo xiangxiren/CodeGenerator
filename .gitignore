@@ -245,3 +245,4 @@ ModelManifest.xml
 .fake/
 *.cst
 *.pdm
+/CodeGenerator.sln.DotSettings
