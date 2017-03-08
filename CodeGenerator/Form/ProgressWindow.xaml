@@ -12,7 +12,7 @@
         Icon="/CodeGenerator;component/House.ico">
     <Grid Height="50">
         <DockPanel>
-            <TextBlock Name="TxtProgress" Text="进度" Width="24" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBlock Name="TxtProgress" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             <ProgressBar Height="20" Name="GenerateProgress" Width="250"/>
         </DockPanel>
     </Grid>
