@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using CodeGenerator.AutoComplete;
 using CodeGenerator.Generate;
+using CodeGenerator.Operate;
 using CodeGenerator.Pdm;
 using Microsoft.Win32;
 using MessageBox = System.Windows.MessageBox;
@@ -17,12 +16,6 @@ namespace CodeGenerator.Form
     /// </summary>
     public partial class MainWindow
     {
-        private const string ImageTable = "/Image/table.png";
-        private const string ImagePackage = "/Image/package.png";
-
-        private List<TableInfo> _tableInfos;
-        private List<AutoCompleteEntry> _autoCompleteEntries;
-
         #region 构造函数
 
         public MainWindow()
@@ -41,26 +34,7 @@ namespace CodeGenerator.Form
         /// </summary>
         public void BindColumnDataGrid(string tableId)
         {
-            var list = new List<ColumnInfo>();
-
-            if (!string.IsNullOrEmpty(tableId) && _tableInfos != null)
-            {
-                var table = _tableInfos.FirstOrDefault(t => t.Id == tableId);
-                if (table != null)
-                {
-                    list = table.ColumnInfos;
-
-                    table.PrimaryKeys.ForEach(k =>
-                    {
-                        k.Columns.ForEach(c =>
-                        {
-                            c.PrimaryKey = true;
-                        });
-                    });
-                }
-            }
-
-            ColumnDataGrid.DataContext = list;
+            ColumnDataGrid.DataContext = XmlNodeOperate.Context.GetColumnDataGridDataSource(tableId);
         }
 
         #endregion
@@ -96,57 +70,16 @@ namespace CodeGenerator.Form
             var pdmReader = new PdmReader(filePath);
             pdmReader.InitData();
 
-            var treeModels = new List<TreeModel>();
+            TreeModelOperate.Context.Init(pdmReader.Models);
+            XmlNodeOperate.Init(pdmReader.Tables);
 
-            foreach (var model in pdmReader.Models)
+            TwLeaf.ItemsSource = TreeModelOperate.Context.TreeModels;
+            var tableInfos = XmlNodeOperate.Context.TableInfos;
+            if (tableInfos != null && tableInfos.Count > 0)
             {
-                var node = new TreeModel { Id = model.Id, Name = model.Name, NodeType = NodeType.Model, Icon = ImagePackage, IsExpanded = true, IsSelected = true };
-
-                if (model.PackageInfos != null)
-                    node.Children = GetNodeFromPackageInfo(node, model.PackageInfos);
-
-                treeModels.Add(node);
-            }
-
-            TwLeaf.ItemsSource = treeModels;
-            _tableInfos = pdmReader.Tables;
-            if (_tableInfos != null && _tableInfos.Count > 0)
-            {
-                var firstOrDefault = _tableInfos.FirstOrDefault();
+                var firstOrDefault = tableInfos.FirstOrDefault();
                 if (firstOrDefault != null) BindColumnDataGrid(firstOrDefault.Id);
             }
-
-            GetAutoCompleteEntrys(treeModels);
-        }
-
-        private List<TreeModel> GetNodeFromPackageInfo(TreeModel parent, List<PackageInfo> packageInfos)
-        {
-            var nodes = new List<TreeModel>();
-            if (packageInfos == null) return nodes;
-
-            foreach (var package in packageInfos)
-            {
-                var node = new TreeModel { Id = package.Id, Name = package.Name, NodeType = NodeType.Package, Icon = ImagePackage, Parent = parent };
-                if (package.PackageInfos != null)
-                    node.Children.AddRange(GetNodeFromPackageInfo(node, package.PackageInfos));
-
-                if (package.TableInfos != null)
-                    node.Children.AddRange(
-                        package.TableInfos.Select(
-                            table =>
-                                new TreeModel
-                                {
-                                    Id = table.Id,
-                                    Name = string.Format("{0}({1})", table.Code, table.Name),
-                                    NodeType = NodeType.Table,
-                                    Icon = ImageTable,
-                                    Parent = node
-                                }));
-
-                nodes.Add(node);
-            }
-
-            return nodes;
         }
 
         #endregion
@@ -155,12 +88,12 @@ namespace CodeGenerator.Form
 
         private void MenuExpandAll_Click(object sender, RoutedEventArgs e)
         {
-            SetAllNodeIsExpanded(true);
+            TreeModelOperate.Context.SetAllNodeIsExpanded(true);
         }
 
         private void MenuUnExpandAll_Click(object sender, RoutedEventArgs e)
         {
-            SetAllNodeIsExpanded(false);
+            TreeModelOperate.Context.SetAllNodeIsExpanded(false);
         }
 
         private void TwLeaf_OnSelected(object sender, RoutedEventArgs e)
@@ -193,30 +126,6 @@ namespace CodeGenerator.Form
                     GenerateBatchGenerate();
                     break;
             }
-        }
-
-        private void GenerateSingleTable()
-        {
-            var selectedItem = (TreeModel)TwLeaf.SelectedItem;
-            if (selectedItem == null || selectedItem.NodeType != NodeType.Table)
-            {
-                MessageBox.Show(this, "请选择需要生成的表", "提示");
-                return;
-            }
-
-            GenerateCode(selectedItem);
-        }
-
-        private void GenerateBatchGenerate()
-        {
-            var selectedItem = (TreeModel)TwLeaf.SelectedItem;
-            if (selectedItem == null || selectedItem.NodeType == NodeType.Table)
-            {
-                MessageBox.Show(this, "请选择需要生成的包", "提示");
-                return;
-            }
-
-            GenerateCode(selectedItem);
         }
 
         private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
@@ -258,29 +167,7 @@ namespace CodeGenerator.Form
             var result = window.ShowDialog();
             if (!result.HasValue || !result.Value) return;
 
-            var tables = new List<TableInfo>();
-            if (treeModel == null) return;
-
-            if (treeModel.NodeType == NodeType.Table)
-            {
-                var table = _tableInfos.FirstOrDefault(t => t.Id == treeModel.Id && t.ColumnInfos != null && t.ColumnInfos.Count > 0);
-
-                if (table != null)
-                    tables.Add(table);
-            }
-            else if (treeModel.NodeType == NodeType.Package)
-            {
-                tables.AddRange(GetTableInfosFromPackage(treeModel));
-            }
-            else
-            {
-                if (treeModel.Children == null) return;
-
-                foreach (var child in treeModel.Children)
-                {
-                    tables.AddRange(GetTableInfosFromPackage(child));
-                }
-            }
+            var tables = new GenerateOperate(treeModel, XmlNodeOperate.Context.TableInfos).GetGenerateTables();
 
             foreach (var info in tables)
             {
@@ -317,135 +204,44 @@ namespace CodeGenerator.Form
             //            progressWindow.ShowDialog();
         }
 
-        private IEnumerable<TableInfo> GetTableInfosFromPackage(TreeModel treeModel)
+        private void GenerateSingleTable()
         {
-            var tables = new List<TableInfo>();
-
-            if (treeModel == null || treeModel.Children == null) return tables;
-            foreach (var child in treeModel.Children)
+            var selectedItem = (TreeModel)TwLeaf.SelectedItem;
+            if (selectedItem == null || selectedItem.NodeType != NodeType.Table)
             {
-                if (child.NodeType == NodeType.Package)
-                    tables.AddRange(GetTableInfosFromPackage(child));
-                else
-                {
-                    var table = _tableInfos.FirstOrDefault(t => t.Id == child.Id && t.ColumnInfos != null && t.ColumnInfos.Count > 0);
-
-                    if (table != null)
-                        tables.Add(table);
-                }
+                MessageBox.Show(this, "请选择需要生成的表", "提示");
+                return;
             }
 
-            return tables;
+            GenerateCode(selectedItem);
         }
 
-        #region 查找表节点
+        private void GenerateBatchGenerate()
+        {
+            var selectedItem = (TreeModel)TwLeaf.SelectedItem;
+            if (selectedItem == null || selectedItem.NodeType == NodeType.Table)
+            {
+                MessageBox.Show(this, "请选择需要生成的包", "提示");
+                return;
+            }
+
+            GenerateCode(selectedItem);
+        }
 
         /// <summary>
         /// 查找表
         /// </summary>
         private void FindTreeNode()
         {
-            var window = new SearchTableWindow(_autoCompleteEntries)
+            var window = new SearchTableWindow(TreeModelOperate.Context.AutoCompleteEntries)
             {
                 Owner = this
             };
             var result = window.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                SetAllNodeIsExpanded(false);
-                ExpandTreeNode(window.SelectedNodeId);
-            }
-        }
-
-        private void GetAutoCompleteEntrys(IEnumerable<TreeModel> treeModels)
-        {
-            _autoCompleteEntries = new List<AutoCompleteEntry>();
-            foreach (var treeModel in treeModels)
-            {
-                var list = GetAutoCompleteEntrys(treeModel);
-                if (list != null && list.Count > 0)
-                    _autoCompleteEntries.AddRange(list);
-            }
-        }
-
-        private List<AutoCompleteEntry> GetAutoCompleteEntrys(TreeModel treeModel)
-        {
-            var list = new List<AutoCompleteEntry>();
-            if (treeModel == null) return list;
-            list.Add(new AutoCompleteEntry(treeModel.Id, treeModel.Name, null));
-
-            if (treeModel.Children == null || treeModel.Children.Count <= 0) return list;
-
-            foreach (var child in treeModel.Children)
-            {
-                var childs = GetAutoCompleteEntrys(child);
-                if (childs != null && childs.Count > 0)
-                    list.AddRange(childs);
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// 展开指定id的节点
-        /// </summary>
-        /// <param name="id"></param>
-        private void ExpandTreeNode(string id)
-        {
-            if (TwLeaf.ItemsSource == null) return;
-
-            var model = GetSelectedTreeModel(TwLeaf.ItemsSource.Cast<TreeModel>(), id);
-
-            if (model != null)
-            {
-                model.IsSelected = true;
-                SetParentIsExpanded(model, true);
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// 通过表Id获取表节点
-        /// </summary>
-        /// <param name="treeModels"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private TreeModel GetSelectedTreeModel(IEnumerable<TreeModel> treeModels, string id)
-        {
-            foreach (var treeModel in treeModels)
-            {
-                if (treeModel.Id == id) return treeModel;
-                if (treeModel.Children == null || treeModel.Children.Count <= 0) continue;
-                var model = GetSelectedTreeModel(treeModel.Children, id);
-                if (model != null) return model;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// 设置父节点的展开状态
-        /// </summary>
-        /// <param name="treeModel"></param>
-        /// <param name="isExpanded"></param>
-        private void SetParentIsExpanded(TreeModel treeModel, bool isExpanded)
-        {
-            if (treeModel == null) return;
-            treeModel.IsExpanded = isExpanded;
-            SetParentIsExpanded(treeModel.Parent, isExpanded);
-        }
-
-        /// <summary>
-        /// 设置节点是否展开
-        /// </summary>
-        /// <param name="isExpanded"></param>
-        private void SetAllNodeIsExpanded(bool isExpanded)
-        {
-            if (TwLeaf.ItemsSource == null) return;
-            foreach (TreeModel tree in TwLeaf.ItemsSource)
-            {
-                tree.IsExpanded = isExpanded;
-                tree.SetChildrenExpanded(isExpanded);
+                TreeModelOperate.Context.SetAllNodeIsExpanded(false);
+                TreeModelOperate.Context.ExpandTreeNode(window.SelectedNodeId);
             }
         }
 

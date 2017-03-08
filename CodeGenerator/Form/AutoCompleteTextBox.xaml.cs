@@ -109,6 +109,14 @@ namespace CodeGenerator.Form
             _autoCompletionList.Clear();
         }
 
+        /// <summary>
+        /// 输入框获取焦点
+        /// </summary>
+        public void TextBoxFocus()
+        {
+            _textBox.Focus();
+        }
+
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_comboBox.SelectedItem != null)
@@ -169,7 +177,7 @@ namespace CodeGenerator.Form
         }
 
         //获得焦点时
-        public void textBox_GotFocus(object sender, RoutedEventArgs e)
+        private void textBox_GotFocus(object sender, RoutedEventArgs e)
         {
             if (_insertText) _insertText = false;
             else
@@ -183,7 +191,7 @@ namespace CodeGenerator.Form
             }
         }
 
-        public void textBox_KeyDown(object sender, KeyEventArgs e)
+        private void textBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (_textBox.IsInputMethodEnabled)
             {
@@ -196,7 +204,7 @@ namespace CodeGenerator.Form
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void textBox_KeyUp(object sender, KeyEventArgs e)
+        private void textBox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Down && _comboBox.IsDropDownOpen)
             {

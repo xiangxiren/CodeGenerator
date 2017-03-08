@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
 using CodeGenerator.AutoComplete;
 
@@ -33,6 +34,11 @@ namespace CodeGenerator.Form
         {
             if (Keyboard.IsKeyDown(Key.Escape))
                 Close();
+        }
+
+        private void SearchTableWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            TxtSearch.TextBoxFocus();
         }
     }
 }

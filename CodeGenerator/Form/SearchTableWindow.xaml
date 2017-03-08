@@ -9,7 +9,8 @@
         WindowStyle="None"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterScreen" 
-        KeyDown="SearchTableWindow_OnKeyDown">
+        KeyDown="SearchTableWindow_OnKeyDown"
+        Loaded="SearchTableWindow_OnLoaded">
     <Grid Height="92">
         <Grid.RowDefinitions>
             <RowDefinition Height="15*"/>
@@ -17,7 +18,7 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0" HorizontalAlignment="Left">
             <Image Source="/Image/search.png" Width="20" Height="20" Margin="5,0,0,0"></Image>
-            <Label Margin="-5,0,0,0" FontSize="15" Content="Enter model/package/table name"></Label>
+            <Label Margin="0,0,0,0" FontSize="15" Content="Enter model/package/table name"></Label>
         </DockPanel>
         <form:AutoCompleteTextBox Height="26" Width="388" x:Name="TxtSearch" Margin="10,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" />
     </Grid>

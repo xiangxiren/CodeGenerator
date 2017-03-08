@@ -107,6 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generate\IGenerateCode.cs" />
+    <Compile Include="Operate\GenerateOperate.cs" />
+    <Compile Include="Operate\TreeModelOperate.cs" />
+    <Compile Include="Operate\XmlNodeOperate.cs" />
     <Compile Include="Pdm\InfoBase.cs" />
     <Compile Include="Pdm\TreeModel.cs" />
     <Compile Include="Pdm\LogHelper.cs" />
