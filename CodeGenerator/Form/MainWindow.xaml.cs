@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using CodeGenerator.Generate;
 using CodeGenerator.Operate;
 using CodeGenerator.Pdm;
 using Microsoft.Win32;
@@ -169,39 +168,8 @@ namespace CodeGenerator.Form
 
             var tables = new GenerateOperate(treeModel, XmlNodeOperate.Context.TableInfos).GetGenerateTables();
 
-            foreach (var info in tables)
-            {
-                foreach (var argument in window.GenerateArguments)
-                {
-                    try
-                    {
-                        switch (argument.GenerateType)
-                        {
-                            case GenerateType.Entity:
-                                new EntityGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
-                                break;
-                            case GenerateType.WebModel:
-                                new WebModelGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
-                                break;
-                            case GenerateType.Repository:
-                                new RepositoryGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
-                                break;
-                            case GenerateType.Bl:
-                                new BlGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
-                                break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        LogHelper.Error(this, string.Format("表{0}生成{1}错误.{2}", info.Code, argument.GenerateType, e.Message));
-                    }
-                }
-            }
-
-            MessageBox.Show(this, "生成完成", "提示");
-
-            //            var progressWindow = new ProgressWindow(tables, window.GenerateArguments) { Owner = this };
-            //            progressWindow.ShowDialog();
+            var progressWindow = new ProgressWindow(tables, window.GenerateArguments) { Owner = this };
+            progressWindow.ShowDialog();
         }
 
         private void GenerateSingleTable()

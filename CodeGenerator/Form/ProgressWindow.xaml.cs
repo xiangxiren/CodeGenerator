@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CodeGenerator.Generate;
@@ -16,8 +17,6 @@ namespace CodeGenerator.Form
         private readonly IList<TableInfo> _tableInfos;
         private readonly IList<GenerateArgument> _generateArguments;
 
-        private Thread _generateThread;
-
         public ProgressWindow(IList<TableInfo> tableInfos, IList<GenerateArgument> generateArguments)
         {
             _tableInfos = tableInfos;
@@ -25,7 +24,7 @@ namespace CodeGenerator.Form
             InitializeComponent();
         }
 
-        private void ExecuteGenerate(object obj)
+        private void ExecuteGenerate()
         {
             int num = 0;
             foreach (var info in _tableInfos)
@@ -56,9 +55,12 @@ namespace CodeGenerator.Form
                     }
                 }
 
-                TxtProgress.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle,
+                GenerateProgress.Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle,
                     new Action<long, long>(UpdateCopyProgress), _tableInfos.Count, ++num);
             }
+
+            Thread.Sleep(500);
+            GenerateProgress.Dispatcher.Invoke(Close);
         }
 
         private void UpdateCopyProgress(long fileLength, long currentLength)
@@ -71,21 +73,7 @@ namespace CodeGenerator.Form
         {
             GenerateProgress.Maximum = _tableInfos.Count;
 
-            _generateThread = new Thread(ExecuteGenerate);
-            _generateThread.Start();
-        }
-
-        private void ProgressBarWindow_OnClosed(object sender, EventArgs e)
-        {
-            try
-            {
-                if (_generateThread != null)
-                    _generateThread.Abort();
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error(this, ex);
-            }
+            Task.Factory.StartNew(ExecuteGenerate);
         }
     }
 }

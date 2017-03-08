@@ -123,6 +123,9 @@ namespace CodeGenerator.Form
         {
             if (Keyboard.IsKeyDown(Key.Escape))
                 Close();
+
+            if (Keyboard.IsKeyDown(Key.F5))
+                BtnSave_OnClick(null, null);
         }
 
         #endregion

@@ -86,8 +86,8 @@
         </DockPanel>
         
         <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" LastChildFill="False" Margin="0,0,20,0" VerticalAlignment="Center">
-            <Button Name="BtnSave" Click="BtnSave_OnClick" FontSize="16" Width="60">确定</Button>
-            <Button Name="BtnCancel" Click="BtnCancel_OnClick" FontSize="16" Width="60" Margin="10,0,0,0">取消</Button>
+            <Button Name="BtnSave" Click="BtnSave_OnClick" FontSize="16" Width="90">确定（F5）</Button>
+            <Button Name="BtnCancel" Click="BtnCancel_OnClick" FontSize="16" Width="90" Margin="10,0,0,0">取消（Esc）</Button>
         </DockPanel>
     </Grid>
 </Window>
