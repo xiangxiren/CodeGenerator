@@ -24,7 +24,7 @@ namespace CodeGenerator.Generate
         /// <returns></returns>
         protected virtual string GetFullFilePath(string formatTableName, string fileSavePath)
         {
-            SurePathExist(fileSavePath);
+            EnsurePathExist(fileSavePath);
             return Path.Combine(fileSavePath, formatTableName + FileName);
         }
 
@@ -32,7 +32,7 @@ namespace CodeGenerator.Generate
         /// 确保目录存在
         /// </summary>
         /// <param name="fileSavePath"></param>
-        private void SurePathExist(string fileSavePath)
+        private void EnsurePathExist(string fileSavePath)
         {
             if (!Directory.Exists(fileSavePath))
             {
