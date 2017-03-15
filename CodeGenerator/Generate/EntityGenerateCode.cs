@@ -6,10 +6,15 @@ namespace CodeGenerator.Generate
 {
     public class EntityGenerateCode : GenerateCodeBase, IGenerateCode
     {
+        protected override string FileName
+        {
+            get { return "Entity.cs"; }
+        }
+
         public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
             var formatTableName = table.GetFormatTableName();
-            using (var fs = new FileStream(Path.Combine(fileSavePath, formatTableName) + "Entity.cs", FileMode.Create))
+            using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using

@@ -5,10 +5,15 @@ namespace CodeGenerator.Generate
 {
     public class RepositoryGenerateCode : GenerateCodeBase, IGenerateCode
     {
+        protected override string FileName
+        {
+            get { return "Repository.cs"; }
+        }
+
         public void Generate(TableInfo tableInfo, string classNamespace, string fileSavePath)
         {
             var formatTableName = tableInfo.GetFormatTableName();
-            using (var fs = new FileStream(Path.Combine(fileSavePath, formatTableName) + "Repository.cs", FileMode.Create))
+            using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using

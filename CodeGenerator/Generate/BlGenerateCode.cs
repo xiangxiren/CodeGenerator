@@ -3,12 +3,17 @@ using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
 {
-    public class BlGenerateCode : IGenerateCode
+    public class BlGenerateCode : GenerateCodeBase, IGenerateCode
     {
+        protected override string FileName
+        {
+            get { return "BL.cs"; }
+        }
+
         public void Generate(TableInfo tableInfo, string classNamespace, string fileSavePath)
         {
             var formatTableName = tableInfo.GetFormatTableName();
-            using (var fs = new FileStream(Path.Combine(fileSavePath, formatTableName) + "BL.cs", FileMode.Create))
+            using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using
