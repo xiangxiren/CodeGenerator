@@ -46,7 +46,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("        /// {0}", columnInfo.Comment);
                     sw.WriteLine("        /// </summary>");
                     if (columnType == "string")
-                        sw.WriteLine("        [StringLength({0}), ErrorMessage = \"{1}长度不能超过{2}\")]", columnInfo.Length,
+                        sw.WriteLine("        [StringLength({0}, ErrorMessage = \"{1}长度不能超过{2}\")]", columnInfo.Length,
                             string.IsNullOrEmpty(columnInfo.Comment) ||
                             string.IsNullOrEmpty(columnInfo.Comment.Trim())
                                 ? columnInfo.Code
