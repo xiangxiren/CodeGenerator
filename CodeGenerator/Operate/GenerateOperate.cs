@@ -19,7 +19,7 @@ namespace CodeGenerator.Operate
         public List<TableInfo> GetGenerateTables()
         {
             var tables = new List<TableInfo>();
-            if (_treeModel == null)return tables;
+            if (_treeModel == null) return tables;
 
             if (_treeModel.NodeType == NodeType.Table)
             {
@@ -36,9 +36,17 @@ namespace CodeGenerator.Operate
             {
                 if (_treeModel.Children == null) return tables;
 
-                foreach (var child in _treeModel.Children)
+                tables.AddRange(
+                    _treeModel.Children.Where(o => o.NodeType == NodeType.Table)
+                        .Select(
+                            tableNode =>
+                                _tableInfos.FirstOrDefault(
+                                    t => t.Id == tableNode.Id && t.ColumnInfos != null && t.ColumnInfos.Count > 0))
+                        .Where(table => table != null));
+
+                foreach (var packageNode in _treeModel.Children.Where(o => o.NodeType == NodeType.Package))
                 {
-                    tables.AddRange(GetTableInfosFromPackage(child));
+                    tables.AddRange(GetTableInfosFromPackage(packageNode));
                 }
             }
 

@@ -93,6 +93,18 @@ namespace CodeGenerator.Operate
 
                 if (model.PackageInfos != null)
                     node.Children = GetNodeFromPackageInfo(node, model.PackageInfos);
+                if (model.TableInfos != null)
+                    node.Children.AddRange(
+                            model.TableInfos.Select(
+                                table =>
+                                    new TreeModel
+                                    {
+                                        Id = table.Id,
+                                        Name = string.Format("{0}({1})", table.Code, table.Name),
+                                        NodeType = NodeType.Table,
+                                        Icon = ImageTable,
+                                        Parent = node
+                                    }));
 
                 TreeModels.Add(node);
             }

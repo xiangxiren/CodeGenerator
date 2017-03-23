@@ -83,6 +83,7 @@ namespace CodeGenerator.Pdm
                 SetNodeValueInfo(model, xnModel);
 
             model.PackageInfos = GetPackageInfos(xnModel);
+            model.TableInfos = GetTableInfos(xnModel);
 
             return model;
         }
