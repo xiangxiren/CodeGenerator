@@ -22,6 +22,8 @@ namespace CodeGenerator.Form
             InitializeComponent();
 
             ColumnDataGrid.LoadingRow += DataGridLoadingRow;
+
+            var dic = Environment.CurrentDirectory;
         }
 
         #endregion
