@@ -1,48 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 
 namespace CodeGenerator.Generate
 {
     public sealed class CodeGeneratorFactory
     {
-        private List<string> _assemblys = new List<string> { "CodeGenerator", "System.Core" };
-        private List<string> _namespace = new List<string> { "System.Linq", "CodeGenerator.Pdm", "CodeGenerator.Generate" };
+        private readonly string _baseTemplate;
 
-        private const string CodeTemplateMatch = @"^<%@ CodeTemplate Language=C# FileName=Entity %>$";
-
+        public CodeGeneratorFactory()
+        {
+            _baseTemplate = ReadBaseTemplate();
+        }
 
         public List<ICodeGenerator> GetTemplateGenerateCodes()
         {
             var codeGenerators = new List<ICodeGenerator>();
 
-            var templates = GetTemplates();
+            var generatorWrappers = new GeneratorWrapperFactory().GetGeneratorWrappers();
 
-
-            foreach (var template in templates)
+            foreach (var wrapper in generatorWrappers)
             {
-                var templateSb = new StringBuilder();
+                var usingStr = wrapper.Imports.Aggregate(string.Empty,
+                    (current, import) => current + "using " + import.Namespace + ";\r\n");
 
-                using (var sr = new StreamReader(template))
-                {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
+                var generatorCode = _baseTemplate
+                    .Replace("$Using$", usingStr)
+                    .Replace("$FileName$", wrapper.CodeTemplate.FileName)
+                    .Replace("$Properies$", "")
+                    .Replace("$ChildTemplate$", wrapper.CodeBuilder.ToString());
 
-                    }
-                }
+                var codeGenerator = (ICodeGenerator)DynClassUtils.GetDynClassObject(generatorCode,
+                    wrapper.CodeTemplate.FileName + "GenerateCode",
+                    string.Empty, wrapper.Assemblies.Select(i => i.Name + i.Extension));
+
+                if (codeGenerator != null)
+                    codeGenerators.Add(codeGenerator);
             }
 
-
-            return null;
+            return codeGenerators;
         }
 
-        private string[] GetTemplates()
+        private string ReadBaseTemplate()
         {
-            var templateDirectory = Path.Combine(Environment.CurrentDirectory, "Template");
+            string template;
 
-            return Directory.GetFiles(templateDirectory, ".cst");
+            var templateDirectory = Path.Combine(Environment.CurrentDirectory, "Template\\BaseCodeGeneratorTemplate.txt");
+            using (var sr = new StreamReader(templateDirectory))
+            {
+                template = sr.ReadToEnd();
+            }
+
+            return template;
         }
     }
 }

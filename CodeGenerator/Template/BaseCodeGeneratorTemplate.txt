@@ -1,0 +1,25 @@
+﻿$Using$
+public class $FileName$GenerateCode : GenerateCodeBase, ICodeGenerator
+{
+    protected override string FileName
+    {
+        get { return "$FileName$"; }
+    }
+
+    $Properies$
+
+    public KeyValuePair<string, string> Generate(TableInfo tableInfo, string classNamespace)
+    {
+        var TableInfo = tableInfo;
+        var Namespace = classNamespace;
+        var FormatTableName = TableInfo.GetFormatTableName();
+        var Comment = TableInfo.Comment;
+        var TableName = TableInfo.Code;
+        var PrimaryKey = TableInfo.GetPrimaryKeyColumnName();
+
+        var builder = new StringBuilder();
+        $ChildTemplate$
+
+        return new KeyValuePair<string, string>("$FileName$GenerateCode", builder.ToString());
+    }
+}

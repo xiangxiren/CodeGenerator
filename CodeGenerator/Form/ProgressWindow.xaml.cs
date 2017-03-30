@@ -17,6 +17,8 @@ namespace CodeGenerator.Form
         private readonly IList<TableInfo> _tableInfos;
         private readonly IList<GenerateArgument> _generateArguments;
 
+        private static readonly IList<ICodeGenerator> ICodeGenerators = new CodeGeneratorFactory().GetTemplateGenerateCodes();
+
         public ProgressWindow(IList<TableInfo> tableInfos, IList<GenerateArgument> generateArguments)
         {
             _tableInfos = tableInfos;
@@ -48,6 +50,13 @@ namespace CodeGenerator.Form
                                 new BlGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
                                 break;
                         }
+
+                        foreach (var generator in ICodeGenerators)
+                        {
+                            var keyValuePair = generator.Generate(info, argument.ClassNamespace);
+                        }
+
+
                     }
                     catch (Exception e)
                     {

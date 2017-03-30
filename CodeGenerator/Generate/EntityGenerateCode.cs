@@ -50,7 +50,7 @@ namespace CodeGenerator.Generate
                 foreach (
                     var columnInfo in
                         table.ColumnInfos.Where(
-                            c => !IgnoreColumns.Contains(formatTableName) && c.GetColumnType() == "string"))
+                            c => !IgnoreColumns.Contains(c.Code) && c.GetColumnType() == "string"))
                 {
                     sw.WriteLine("            entity.{0} = string.Empty;", columnInfo.Code);
                 }

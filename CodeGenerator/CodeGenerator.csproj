@@ -64,7 +64,7 @@
     <Compile Include="Form\SearchTableWindow.xaml.cs">
       <DependentUpon>SearchTableWindow.xaml</DependentUpon>
     </Compile>
-    <Content Include="Template\BaseCodeGeneratorTemplate.cs">
+    <Content Include="Template\BaseCodeGeneratorTemplate.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Page Include="Form\GenerateArgumentWindow.xaml">
@@ -86,6 +86,10 @@
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Generate\BlGenerateCode.cs" />
+    <Compile Include="Generate\DynClassUtils.cs" />
+    <Compile Include="Generate\GenerateModel\CodeTemplate.cs" />
+    <Compile Include="Generate\GenerateModel\GeneratorWrapper.cs" />
+    <Compile Include="Generate\GeneratorWrapperFactory.cs" />
     <Compile Include="Generate\ICodeGenerator.cs" />
     <Compile Include="Generate\CodeGeneratorFactory.cs" />
     <Compile Include="Generate\EntityGenerateCode.cs" />
