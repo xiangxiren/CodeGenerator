@@ -17,7 +17,7 @@ namespace <%=Namespace %>
     {
         public static <%=FormatTableName %>Entity New()
         {
-            <%=FormatTableName %>Entity entity = new <%=FormatTableName %>Entity();
+            var entity = new <%=FormatTableName %>Entity();
             entity.Init();
             <%foreach (var columnInfo in TableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.GetColumnType() == "string")) {%>
             entity.<%=columnInfo.Code %> = string.Empty;
