@@ -1,0 +1,45 @@
+﻿<%@ CodeTemplate Language="C#" FileName="Entity"%>
+using System;
+using JG.Core.Cache;
+using PetaPoco;
+using Scm.Component.Common;
+
+namespace <%=Namespace %>
+{
+    /// <summary>
+    /// <%=Comment %>
+    /// </summary>
+    [Serializable]
+    [TableName("<%=TableName %>")]
+    [PrimaryKey("<%=PrimaryKey %>", autoIncrement = false)]
+    [CacheSetting(false, PropertyNameOfDBShard = "ClientID", PropertyNameOfCacheShard = "ClientID", PropertyNamesOfArea = "ClientID", ExpirationPolicy = EntityCacheExpirationPolicies.Stable)]
+    public class <%=FormatTableName %>Entity : ScmBaseEntity
+    {
+        public static <%=FormatTableName %>Entity New()
+        {
+            <%=FormatTableName %>Entity entity = new <%=FormatTableName %>Entity();
+            entity.Init();
+            <%foreach (var columnInfo in TableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.GetColumnType() == "string")) {%>
+            entity.<%=columnInfo.Code %> = string.Empty;
+            <%}%>
+
+            return entity;
+        }
+
+        #region 属性
+        <%foreach (var columnInfo in TableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != TableInfo.GetPrimaryKeyColumnName())) {%>
+
+        /// <summary>
+        /// <%=columnInfo.Comment %>
+        /// </summary>
+        public <%=columnInfo.SystemType %> <%=columnInfo.Code %> { get; set; }
+        <%}%>
+
+        #endregion
+
+        #region 扩展属性
+
+        #endregion
+
+    }
+}

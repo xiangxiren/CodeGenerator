@@ -1,0 +1,93 @@
+﻿<%@ CodeTemplate Language="C#" FileName="WebModel"%>
+using System.Collections.Generic;
+using System.Linq;
+using Scm.Component.Common;
+
+namespace <%=Namespace %>
+{
+    /// <summary>
+    /// <%=Comment %>
+    /// </summary>
+    [QueryTable("<%=TableName %>")]
+    public class <%=FormatTableName %>WebModel : BaseWebModel
+    {
+        #region 属性
+        <%foreach (var columnInfo in tableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != PrimaryKey)){%>
+
+        /// <summary>
+        /// <%=columnInfo.Comment %>
+        /// </summary>
+        <%if(columnInfo.SystemType == "string") {%>
+        [StringLength(<%=columnInfo.Length%>, ErrorMessage = "<%=string.IsNullOrEmpty(columnInfo.Comment) || string.IsNullOrEmpty(columnInfo.Comment.Trim()) ? columnInfo.Code : columnInfo.Comment%>长度不能超过<%=columnInfo.Length%>")]
+        <%}%>
+        public <%=columnInfo.SystemType == "string" ? columnInfo.SystemType : columnInfo.SystemType + "?"%> <%=columnInfo.Code%> { get; set; }
+        <%}%>
+
+        #endregion
+
+        #region 构造函数
+
+        public static <%=FormatTableName %>WebModel New()
+        {
+            return <%=FormatTableName %>Entity.New().AsWebModel();
+        }
+
+        #endregion
+    }
+
+    public static class <%=FormatTableName %>WebModelExtensions
+    {
+        #region WebModel转换为Entity
+
+        public static <%=FormatTableName %>Entity AsEntity(this <%=FormatTableName %>WebModel model)
+        {
+            var entity = new <%=FormatTableName %>BL().Get(model.<%=PrimaryKey%>, true);
+            DataProcess.InitModel(model);
+            if (entity == null)
+            {
+                entity = <%=FormatTableName %>Entity.New();
+            }
+            <%foreach (var columnInfo in tableInfo.ColumnInfos.Where(
+                    c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
+                { 
+                var columnType = columnInfo.GetColumnType();
+                if (columnInfo.SystemType == "string"){%>
+            entity.<%=columnInfo.Code%> = model.<%=columnInfo.Code%>;
+                 <%}else{%>
+            if (model.<%=columnInfo.Code%>.HasValue) entity.<%=columnInfo.Code%> = model.<%=columnInfo.Code%>.Value;
+
+            <%}}%>
+
+            return entity;
+        }
+
+        public static IEnumerable<<%=FormatTableName %>Entity> AsEntity(this IEnumerable<<%=FormatTableName %>WebModel> modelList)
+        {
+            return modelList == null ? null : modelList.Select(AsEntity).Where(c => c != null);
+        }
+
+        #endregion
+
+        #region Entity转换为WebModel
+
+        public static <%=FormatTableName %>WebModel AsWebModel(this <%=FormatTableName%>Entity entity, bool isEdit = true)
+        {
+            if (entity == null) return null;
+            var model = new <%=FormatTableName %>WebModel();
+            model.Init(entity);
+            <%foreach (var columnInfo in tableInfo.ColumnInfos.Where(
+                    c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName())) {%>
+            model.<%=columnInfo.Code %> = entity.<%=columnInfo.Code %>;
+            <%} %>
+
+            return model;
+        }
+
+        public static IEnumerable<<%=FormatTableName %>WebModel> AsWebModel(this IEnumerable<<%=FormatTableName %>Entity> entities, bool isEdit = false)
+        {
+            return entities == null ? null : entities.Select(t => t.AsWebModel(isEdit)).Where(c => c != null);
+        }
+
+        #endregion
+    }
+}
