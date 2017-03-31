@@ -6,10 +6,10 @@ public class $FileName$GenerateCode : GenerateCodeBase, ICodeGenerator
         get { return "$FileName$"; }
     }
 
-    $Properies$
-
     public KeyValuePair<string, string> Generate(TableInfo tableInfo, string classNamespace)
     {
+		#region 变量
+		
         var TableInfo = tableInfo;
         var Namespace = classNamespace;
         var FormatTableName = TableInfo.GetFormatTableName();
@@ -17,9 +17,11 @@ public class $FileName$GenerateCode : GenerateCodeBase, ICodeGenerator
         var TableName = TableInfo.Code;
         var PrimaryKey = TableInfo.GetPrimaryKeyColumnName();
 
-        var builder = new StringBuilder();
-        $ChildTemplate$
+		#endregion
 
+        var builder = new StringBuilder();
+
+        $ChildTemplate$
         return new KeyValuePair<string, string>("$FileName$GenerateCode", builder.ToString());
     }
 }
