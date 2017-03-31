@@ -89,6 +89,7 @@ namespace CodeGenerator.Generate
                     }
                 }
 
+                generatorWrapper.TemplateName = fileName;
                 generatorWrappers.Add(generatorWrapper);
             }
 

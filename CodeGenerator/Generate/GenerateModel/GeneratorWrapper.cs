@@ -5,6 +5,8 @@ namespace CodeGenerator.Generate.GenerateModel
 {
     public class GeneratorWrapper
     {
+        public string TemplateName { get; set; }
+
         public StringBuilder CodeBuilder { get; set; }
 
         public CodeTemplate CodeTemplate { get; set; }
