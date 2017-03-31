@@ -3,7 +3,7 @@
     public class GenerateArgument
     {
         /// <summary>
-        /// 类命名空间
+        /// 生成类型
         /// </summary>
         public GenerateType GenerateType { get; set; }
 

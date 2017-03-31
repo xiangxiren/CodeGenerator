@@ -32,13 +32,18 @@ namespace CodeGenerator.Generate
                     string line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        if (Regex.Matches(line, "<%").Count != Regex.Matches(line, "%>").Count)
+                        if (!string.IsNullOrEmpty(tempLine) || Regex.Matches(line, "<%").Count != Regex.Matches(line, "%>").Count)
                         {
                             tempLine += line;
-                            continue;
+
+                            if (Regex.Matches(tempLine, "<%").Count == Regex.Matches(tempLine, "%>").Count)
+                            {
+                                line = tempLine;
+                                tempLine = string.Empty;
+                            }
+                            else
+                                continue;
                         }
-                        if (!string.IsNullOrEmpty(tempLine))
-                            line = tempLine;
 
                         if (!IsMatchCodeSetting(line, generatorWrapper, fileName))
                         {

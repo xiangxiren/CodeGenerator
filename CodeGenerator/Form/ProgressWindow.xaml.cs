@@ -16,8 +16,19 @@ namespace CodeGenerator.Form
     {
         private readonly IList<TableInfo> _tableInfos;
         private readonly IList<GenerateArgument> _generateArguments;
+        private static readonly IList<ICodeGenerator> CodeGenerators;
 
-        private static readonly IList<ICodeGenerator> ICodeGenerators = new CodeGeneratorFactory().GetTemplateGenerateCodes();
+        static ProgressWindow()
+        {
+            try
+            {
+                CodeGenerators = new CodeGeneratorFactory().GetTemplateGenerateCodes();
+            }
+            catch (Exception e)
+            {
+                LogHelper.Error(null, "模板读取错误", e);
+            }
+        }
 
         public ProgressWindow(IList<TableInfo> tableInfos, IList<GenerateArgument> generateArguments)
         {
@@ -51,12 +62,10 @@ namespace CodeGenerator.Form
                                 break;
                         }
 
-                        foreach (var generator in ICodeGenerators)
+                        foreach (var generator in CodeGenerators)
                         {
                             var keyValuePair = generator.Generate(info, argument.ClassNamespace);
                         }
-
-
                     }
                     catch (Exception e)
                     {

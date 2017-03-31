@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using CodeGenerator.Generate;
 using CodeGenerator.Operate;
 using CodeGenerator.Pdm;
 using Microsoft.Win32;
@@ -23,8 +22,6 @@ namespace CodeGenerator.Form
             InitializeComponent();
 
             ColumnDataGrid.LoadingRow += DataGridLoadingRow;
-
-            
         }
 
         #endregion
