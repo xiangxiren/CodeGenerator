@@ -1,4 +1,10 @@
 ﻿<%@ CodeTemplate Language="C#" FileName="WebModel"%>
+/***************************************************************************
+ * 
+ *       功能：     <%=FormatTableName %>WebModel
+ *       日期：     <%=System.DateTime.Now.ToString()%>
+ * 
+ * *************************************************************************/
 using System.Collections.Generic;
 using System.Linq;
 using Scm.Component.Common;

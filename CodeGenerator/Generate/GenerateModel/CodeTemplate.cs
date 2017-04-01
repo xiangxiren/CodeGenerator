@@ -1,4 +1,6 @@
-﻿namespace CodeGenerator.Generate.GenerateModel
+﻿using System;
+
+namespace CodeGenerator.Generate.GenerateModel
 {
     /// <summary>
     /// 代码生成设置
@@ -64,7 +66,7 @@
 
         public string Default { get; set; }
 
-        public string Optional { get; set; }
+        public string Description { get; set; }
     }
 
 }

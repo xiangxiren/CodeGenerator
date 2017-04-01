@@ -1,4 +1,13 @@
 ﻿<%@ CodeTemplate Language="C#" FileName="Entity"%>
+<%@ Property Name="MainTable" Default="Context" Description="主表" Type="String" %>
+<%@ Property Name="Author" Description="主表" Type="String" %>
+/***************************************************************************
+ * 
+ *       功能：     <%=FormatTableName %>Entity
+ *       作者：     <%=Author %>
+ *       日期：     <%=System.DateTime.Now.ToString()%>
+ * 
+ * *************************************************************************/
 using System;
 using JG.Core.Cache;
 using PetaPoco;

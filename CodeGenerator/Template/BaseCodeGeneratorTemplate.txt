@@ -8,7 +8,7 @@ public class $FileName$GenerateCode : GenerateCodeBase, ICodeGenerator
 
     public KeyValuePair<string, string> Generate(TableInfo tableInfo, string classNamespace)
     {
-		#region 变量
+        #region 变量
 		
         var TableInfo = tableInfo;
         var Namespace = classNamespace;
@@ -17,7 +17,8 @@ public class $FileName$GenerateCode : GenerateCodeBase, ICodeGenerator
         var TableName = TableInfo.Code;
         var PrimaryKey = TableInfo.GetPrimaryKeyColumnName();
 
-		#endregion
+$Properties$
+        #endregion
 
         var builder = new StringBuilder();
 

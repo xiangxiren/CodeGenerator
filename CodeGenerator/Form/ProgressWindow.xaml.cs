@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,13 +17,13 @@ namespace CodeGenerator.Form
     {
         private readonly IList<TableInfo> _tableInfos;
         private readonly IList<GenerateArgument> _generateArguments;
-        private static readonly IList<ICodeGenerator> CodeGenerators;
+        private static readonly Dictionary<string, ICodeGenerator> CodeGenerators;
 
         static ProgressWindow()
         {
             try
             {
-                CodeGenerators = new CodeGeneratorFactory().GetTemplateGenerateCodes();
+                CodeGenerators = CodeGeneratorFactory.GetCodeGenerators("{\"MainTable\": \"User\", \"Author\": \"熊力伟\"}");
             }
             catch (Exception e)
             {
@@ -62,10 +63,10 @@ namespace CodeGenerator.Form
                                 break;
                         }
 
-                        foreach (var generator in CodeGenerators)
-                        {
-                            var keyValuePair = generator.Generate(info, argument.ClassNamespace);
-                        }
+                        //                        foreach (var generator in CodeGenerators)
+                        //                        {
+                        //                            var keyValuePair = generator.Value.Generate(info, argument.ClassNamespace);
+                        //                        }
                     }
                     catch (Exception e)
                     {

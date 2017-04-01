@@ -13,6 +13,7 @@ namespace CodeGenerator.Generate
         private const string CodeTemplateMatch = @"^<%@\s*CodeTemplate(\s+[A-Za-z]+\s*=\s*"".*"")*\s*%>$";
         private const string AssemblyMatch = @"^<%@\s*Assembly\s+Name\s*=\s*"".*""\s*%>$";
         private const string ImportMatch = @"^<%@\s*Import\s+Namespace\s*=\s*"".*""\s*%>$";
+        private const string PropertyMatch = @"^<%@\s*Property(\s+[A-Za-z]+\s*=\s*"".*"")*\s*%>$";
 
         public List<GeneratorWrapper> GetGeneratorWrappers()
         {
@@ -22,7 +23,6 @@ namespace CodeGenerator.Generate
             foreach (var template in templates)
             {
                 var generatorWrapper = new GeneratorWrapper();
-                generatorWrapper.CodeBuilder.AppendLine();
 
                 var fileName = Path.GetFileNameWithoutExtension(template);
 
@@ -115,7 +115,7 @@ namespace CodeGenerator.Generate
                     assembly.Extension = ".dll";
 
                 if (!wrapper.Assemblies.Select(i => i.Name).Contains(assembly.Name))
-                    wrapper.Assemblies.Add(GetModel<Assembly>(text));
+                    wrapper.Assemblies.Add(assembly);
 
                 isMatch = true;
             }
@@ -123,7 +123,19 @@ namespace CodeGenerator.Generate
             {
                 var import = GetModel<Import>(text);
                 if (!wrapper.Imports.Select(i => i.Namespace).Contains(import.Namespace))
-                    wrapper.Imports.Add(GetModel<Import>(text));
+                    wrapper.Imports.Add(import);
+
+                isMatch = true;
+            }
+            else if (Regex.IsMatch(text, PropertyMatch))
+            {
+                var property = GetModel<Property>(text);
+                if (string.IsNullOrEmpty(property.Type))
+                    property.Type = "String";
+
+                if (!string.IsNullOrEmpty(property.Name) &&
+                    !wrapper.Properties.Select(i => i.Name).Contains(property.Name))
+                    wrapper.Properties.Add(property);
 
                 isMatch = true;
             }
