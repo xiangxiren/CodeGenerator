@@ -276,6 +276,14 @@ namespace CodeGenerator.Pdm
                         case "System.Int32":
                             property.SetValue(info, Convert.ToInt32(childNode.InnerText));
                             break;
+                        case "System.Boolean":
+                            bool value;
+
+                            if (!bool.TryParse(childNode.InnerText, out value))
+                                value = childNode.InnerText == "1";
+
+                            property.SetValue(info, value);
+                            break;
                         default:
                             property.SetValue(info, childNode.InnerText);
                             break;
