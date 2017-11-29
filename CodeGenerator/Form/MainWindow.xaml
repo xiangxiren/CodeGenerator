@@ -39,73 +39,75 @@
                 <ColumnDefinition Width="450"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-                <TreeView Grid.RowSpan="2" Grid.Column="0" Name="TwLeaf" TreeViewItem.Selected="TwLeaf_OnSelected">
-                    <TreeView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Name="MenuExpandAll" Header="全部展开" Click="MenuExpandAll_Click">
-                                <MenuItem.Icon>
-                                    <Image Source="/Image/unexpand.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Name="MenuUnExpandAll" Header="全部折叠" Click="MenuUnExpandAll_Click">
-                                <MenuItem.Icon>
-                                    <Image Source="/Image/expand.png" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </ContextMenu>
-                    </TreeView.ContextMenu>
-                    <TreeView.ItemContainerStyle>
-                        <Style TargetType="TreeViewItem">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"></Setter>
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"></Setter>
-                        </Style>
-                    </TreeView.ItemContainerStyle>
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type pdm:TreeModel}"  ItemsSource="{Binding Children}">
-                            <StackPanel  Margin="-2,0,0,0" Orientation="Horizontal" x:Name="staTree">
-                                <StackPanel Orientation="Horizontal">
-                                    <Image VerticalAlignment="Center" Source="{Binding Icon}" ></Image>
-                                    <TextBlock Text="{Binding Name}" Margin="5,0,0,0"></TextBlock>
-                                </StackPanel>
+            <TreeView Grid.RowSpan="2" Grid.Column="0" Name="TwLeaf" TreeViewItem.Selected="TwLeaf_OnSelected">
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Name="MenuExpandAll" Header="全部展开" Click="MenuExpandAll_Click">
+                            <MenuItem.Icon>
+                                <Image Source="/Image/unexpand.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="MenuUnExpandAll" Header="全部折叠" Click="MenuUnExpandAll_Click">
+                            <MenuItem.Icon>
+                                <Image Source="/Image/expand.png" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="TreeViewItem">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"></Setter>
+                        <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"></Setter>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type pdm:TreeModel}"  ItemsSource="{Binding Children}">
+                        <StackPanel  Margin="-2,0,0,0" Orientation="Horizontal" x:Name="staTree">
+                            <StackPanel Orientation="Horizontal">
+                                <Image VerticalAlignment="Center" Source="{Binding Icon}" ></Image>
+                                <TextBlock Text="{Binding Name}" Margin="5,0,0,0"></TextBlock>
                             </StackPanel>
-                        </HierarchicalDataTemplate>
-                    </TreeView.ItemTemplate>
-                </TreeView>
-                <DataGrid x:Name="ColumnDataGrid" ItemsSource="{Binding}" CanUserAddRows="False" AutoGenerateColumns="False" Grid.RowSpan="2" Grid.Column="1">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Name" Width="200" Binding="{Binding Name}"  IsReadOnly="True"
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+            <DataGrid x:Name="ColumnDataGrid" ItemsSource="{Binding}" CanUserAddRows="False" AutoGenerateColumns="False" Grid.RowSpan="2" Grid.Column="1">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding Name}"  IsReadOnly="True"
                                             CanUserSort="False" />
-                        <DataGridTextColumn Header="Code" Width="200" Binding="{Binding Code}" IsReadOnly="True"
+                    <DataGridTextColumn Header="Code" Width="200" Binding="{Binding Code}" IsReadOnly="True"
                                             CanUserSort="False" />
-                        <DataGridTextColumn Header="Comment" Width="*" Binding="{Binding Comment}" IsReadOnly="True"
+                    <DataGridTextColumn Header="Comment" Width="*" Binding="{Binding Comment}" IsReadOnly="True"
                                             CanUserSort="False" />
-                        <DataGridTextColumn Header="DataType" Width="200" Binding="{Binding DataType}" IsReadOnly="True" 
+                    <DataGridTextColumn Header="DataType" Width="200" Binding="{Binding DataType}" IsReadOnly="True" 
                                             CanUserSort="False" />
-                        <DataGridTextColumn Header="Length" Width="100" Binding="{Binding Length}" IsReadOnly="True"
+                    <DataGridTextColumn Header="Length" Width="100" Binding="{Binding Length}" IsReadOnly="True"
                                             CanUserSort="False" />
-                        <DataGridTemplateColumn Header="PrimaryKey" Width="100" CanUserSort="False">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding PrimaryKey}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Identity" Width="100" CanUserSort="False">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding Identity}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Mandatory" Width="100" CanUserSort="False">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding Mandatory}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                    <DataGridTextColumn Header="Precision" Width="100" Binding="{Binding Precision}" IsReadOnly="True"
+                                            CanUserSort="False" />
+                    <DataGridTemplateColumn Header="PrimaryKey" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding PrimaryKey}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Identity" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Identity}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Mandatory" Width="100" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Mandatory}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </Grid>
         <StatusBar Grid.Row="2" HorizontalAlignment="Center">
             <StatusBarItem Content="基于Power Designer的pdm文件生成指定样式的代码"/>

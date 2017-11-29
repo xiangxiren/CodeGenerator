@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -40,7 +39,7 @@ namespace CodeGenerator.Form
 
         private void ExecuteGenerate()
         {
-            int num = 0;
+            var num = 0;
             foreach (var info in _tableInfos)
             {
                 foreach (var argument in _generateArguments)
@@ -70,7 +69,7 @@ namespace CodeGenerator.Form
                     }
                     catch (Exception e)
                     {
-                        LogHelper.Error(this, string.Format("表{0}生成{1}错误.{2}", info.Code, argument.GenerateType, e.Message));
+                        LogHelper.Error(this, $"表{info.Code}生成{argument.GenerateType}错误.{e.Message}");
                     }
                 }
 

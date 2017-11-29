@@ -6,15 +6,7 @@ namespace CodeGenerator.Generate
 {
     public abstract class GenerateCodeBase
     {
-        public static readonly List<string> IgnoreColumns = new List<string> { "CREATEUSERID", "CREATEDATE", "UPDATEUSERID", "UPDATEDATE", "CLIENTID", "STATUS", "UpdateUserName", "ORGID", "STAFFID" };
-
-        protected virtual string FileName
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        protected virtual string FileName => throw new NotImplementedException();
 
         /// <summary>
         /// 获取文件生成的完整路径（包括文件名、扩展名）
@@ -38,6 +30,25 @@ namespace CodeGenerator.Generate
             {
                 Directory.CreateDirectory(fileSavePath);
             }
+        }
+
+        protected string GetListPropertyName(string name)
+        {
+            var endChar = name.Substring(name.Length - 1, 1);
+
+            string replace = endChar;
+            switch (endChar)
+            {
+                case "y":
+                    replace = "ies";
+                    break;
+                case "o":
+                case "s":
+                    replace = endChar + "es";
+                    break;
+            }
+
+            return name.Substring(0, name.Length - 1) + replace;
         }
     }
 }

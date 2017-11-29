@@ -6,22 +6,17 @@ namespace CodeGenerator.Generate
 {
     public class WebModelGenerateCode : GenerateCodeBase, IGenerateCode
     {
-        protected override string FileName
-        {
-            get { return "WebModel.cs"; }
-        }
+        protected override string FileName => "Map.cs";
 
-        public void Generate(TableInfo tableInfo, string classNamespace, string fileSavePath)
+        public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
-            var formatTableName = tableInfo.GetFormatTableName();
+            var formatTableName = table.GetFormatTableName();
             using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using
 
-                sw.WriteLine("using System.Collections.Generic;");
-                sw.WriteLine("using System.Linq;");
-                sw.WriteLine("using Scm.Component.Common;");
+                sw.WriteLine("using System.Data.Entity.ModelConfiguration;");
                 sw.WriteLine();
 
                 #endregion
@@ -29,116 +24,85 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("namespace {0}", classNamespace);
                 sw.WriteLine("{");
 
-                #region WebModelClass
-
-                sw.WriteLine("    [QueryTable(\"{0}\")]", tableInfo.Code);
-                sw.WriteLine("    public class {0}WebModel : BaseWebModel", formatTableName);
+                sw.WriteLine("    public class {0}Map : EntityTypeConfiguration<OfflineTireBasicInfo>", formatTableName);
                 sw.WriteLine("    {");
 
-                #region 属性
+                sw.WriteLine("        public {0}Map()", table.GetFormatTableName());
+                sw.WriteLine("        {");
+                sw.WriteLine("            // Primary Key");
+                sw.WriteLine("            HasKey(t => t.{0});", table.GetPrimaryKeyColumnName());
+                sw.WriteLine();
 
-                sw.WriteLine("        #region 属性");
-                foreach (var columnInfo in tableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
+                var properties =
+                    table.ColumnInfos.Where(t => t.DataType.ToUpper().Contains("TEXT") ||
+                                                 t.DataType.ToUpper().Contains("VARCHAR") ||
+                                                 t.DataType.ToUpper().Contains("NUMERIC"));
+                if (properties.Any())
                 {
-                    var columnType = columnInfo.GetColumnType();
+                    sw.WriteLine("            // Properties");
+                    foreach (var info in table.ColumnInfos)
+                    {
+                        if (info.DataType.ToUpper().Contains("TEXT") && info.Mandatory)
+                        {
+                            sw.WriteLine("            Property(t => t.{0})", info.Code);
+                            sw.WriteLine("                .IsRequired()");
+                            continue;
+                        }
+                        if (info.DataType.ToUpper().Contains("VARCHAR"))
+                        {
+                            sw.WriteLine("            Property(t => t.{0})", info.Code);
+                            if (info.Mandatory)
+                                sw.WriteLine("                .IsRequired()");
+                            sw.WriteLine("                .HasMaxLength({0});", info.Length);
+                            continue;
+                        }
+                        if (info.DataType.ToUpper().Contains("NUMERIC"))
+                        {
+                            sw.WriteLine("            Property(t => t.{0})", info.Code);
+                            if (info.Mandatory)
+                                sw.WriteLine("                .IsRequired()");
+                            sw.WriteLine("                .HasPrecision({0}, {1});", info.Length, info.Precision);
+                        }
+                    }
                     sw.WriteLine();
-                    sw.WriteLine("        /// <summary>");
-                    sw.WriteLine("        /// {0}", columnInfo.Comment);
-                    sw.WriteLine("        /// </summary>");
-                    if (columnType == "string")
-                        sw.WriteLine("        [StringLength({0}, ErrorMessage = \"{1}长度不能超过{2}\")]", columnInfo.Length,
-                            string.IsNullOrEmpty(columnInfo.Comment) ||
-                            string.IsNullOrEmpty(columnInfo.Comment.Trim())
-                                ? columnInfo.Code
-                                : columnInfo.Comment, columnInfo.Length);
-                    sw.WriteLine("        public {0} {1} {2} get; set; {3}",
-                        columnType == "string" ? columnType : columnType + "?",
-                        columnInfo.Code, "{", "}");
                 }
-                sw.WriteLine();
-                sw.WriteLine("        #endregion");
-                sw.WriteLine();
 
-                #endregion
+                sw.WriteLine("            // Table & Column Mappings");
+                sw.WriteLine("            ToTable(\"{0}\");", formatTableName);
 
-                #region 构造函数
-
-                sw.WriteLine("        #region 构造函数");
-                sw.WriteLine();
-                sw.WriteLine("        public static {0}WebModel New()", tableInfo.GetFormatTableName());
-                sw.WriteLine("        {");
-                sw.WriteLine("            return {0}Entity.New().AsWebModel();", tableInfo.GetFormatTableName());
-                sw.WriteLine("        }");
-                sw.WriteLine();
-                sw.WriteLine("        #endregion");
-
-                #endregion
-
-                sw.WriteLine("    }");
-                sw.WriteLine();
-
-                #endregion
-
-                sw.WriteLine("    public static class {0}WebModelExtensions", formatTableName);
-                sw.WriteLine("    {");
-                sw.WriteLine("        #region WebModel转换为Entity");
-                sw.WriteLine();
-                sw.WriteLine("        public static {0}Entity AsEntity(this {0}WebModel model)", formatTableName);
-                sw.WriteLine("        {");
-                sw.WriteLine("            var entity = new {0}BL().Get(model.{1}, true);", formatTableName, tableInfo.GetPrimaryKeyColumnName());
-                sw.WriteLine("            DataProcess.InitModel(model);");
-                sw.WriteLine("            if (entity == null)");
-                sw.WriteLine("            {");
-                sw.WriteLine("                entity = {0}Entity.New();", formatTableName);
-                sw.WriteLine("            }");
-
-                foreach (var columnInfo in tableInfo.ColumnInfos.Where(
-                    c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
+                foreach (var column in table.ColumnInfos)
                 {
-                    var columnType = columnInfo.GetColumnType();
-                    if (columnType == "string")
-                        sw.WriteLine("            entity.{0} = model.{0};", columnInfo.Code);
-                    else
-                        sw.WriteLine("            if (model.{0}.HasValue) entity.{0} = model.{0}.Value;", columnInfo.Code);
+                    sw.WriteLine("            Property(t => t.Id).HasColumnName(\"{0}\");", column.Code);
                 }
 
-                sw.WriteLine();
-                sw.WriteLine("            return entity;");
-                sw.WriteLine("        }");
-                sw.WriteLine();
-                sw.WriteLine("        public static IEnumerable<{0}Entity> AsEntity(this IEnumerable<{0}WebModel> modelList)", formatTableName);
-                sw.WriteLine("        {");
-                sw.WriteLine("            return modelList == null ? null : modelList.Select(AsEntity).Where(c => c != null);");
-                sw.WriteLine("        }");
-                sw.WriteLine();
-                sw.WriteLine("        #endregion");
-                sw.WriteLine();
-                sw.WriteLine("        #region Entity转换为WebModel");
-                sw.WriteLine();
-                sw.WriteLine("        public static {0}WebModel AsWebModel(this {0}Entity entity, bool isEdit = true)", formatTableName);
-                sw.WriteLine("        {");
-                sw.WriteLine("            if (entity == null) return null;");
-                sw.WriteLine("            var model = new {0}WebModel();", formatTableName);
-                sw.WriteLine("            model.Init(entity);");
-
-                foreach (var columnInfo in tableInfo.ColumnInfos.Where(
-                    c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
+                if (table.ReferenceTableInfos.Count > 0)
                 {
-                    sw.WriteLine("            model.{0} = entity.{0};", columnInfo.Code);
+                    sw.WriteLine();
+                    sw.WriteLine("            // Relationships");
+
+                    var flag = false;
+                    foreach (var reference in table.ReferenceTableInfos)
+                    {
+                        if (flag)
+                            sw.WriteLine();
+                        var propertyName = reference.ParentTable.GetFormatTableName();
+                        var foreignKey = reference.ForeignKey.Code.Substring(0, reference.ForeignKey.Code.Length - 2);
+                        if (foreignKey != table.Code)
+                            propertyName = foreignKey + propertyName;
+
+                        sw.WriteLine("            {0}(t => t.{1})", reference.ForeignKey.Mandatory ? "HasRequired" : "HasOptional", reference.ForeignKey.Code);
+                        sw.WriteLine("                .WithMany(t => t.{0})", GetListPropertyName(propertyName));
+                        sw.WriteLine("                .HasForeignKey(d => d.{0});", reference.ForeignKey.Code);
+
+                        flag = true;
+                    }
                 }
 
-                sw.WriteLine();
-                sw.WriteLine("            return model;");
                 sw.WriteLine("        }");
-                sw.WriteLine();
-                sw.WriteLine("        public static IEnumerable<{0}WebModel> AsWebModel(this IEnumerable<{0}Entity> entities, bool isEdit = false)", formatTableName);
-                sw.WriteLine("        {");
-                sw.WriteLine("            return entities == null ? null : entities.Select(t => t.AsWebModel(isEdit)).Where(c => c != null);");
-                sw.WriteLine("        }");
-                sw.WriteLine();
-                sw.WriteLine("        #endregion");
                 sw.WriteLine("    }");
-                sw.Write("}");
+                sw.WriteLine("}");
+                sw.WriteLine();
+
                 sw.Flush();
             }
         }

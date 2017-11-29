@@ -8,12 +8,8 @@ namespace CodeGenerator.Pdm
     public class PdmReader
     {
         public const string OModel = "o:Model";
-        public const string CPackages = "c:Packages";
-        public const string CTables = "c:Tables";
-        public const string CColumns = "c:Columns";
-        public const string CKeys = "c:Keys";
-        public const string CKeyColumns = "c:Key.Columns";
-        public const string CPrimaryKey = "c:PrimaryKey";
+
+        private readonly Dictionary<Type, Type> _listTypeDictionary = new Dictionary<Type, Type>();
 
         private XmlDocument _xmlDoc;
         private XmlNamespaceManager _xmlnsManager;
@@ -34,19 +30,17 @@ namespace CodeGenerator.Pdm
 
         public string PdmFile
         {
-            get { return _pdmFile; }
+            get => _pdmFile;
             set
             {
                 _pdmFile = value;
-                if (_xmlDoc == null)
-                {
-                    _xmlDoc = new XmlDocument();
-                    _xmlDoc.Load(_pdmFile);
-                    _xmlnsManager = new XmlNamespaceManager(_xmlDoc.NameTable);
-                    _xmlnsManager.AddNamespace("a", "attribute");
-                    _xmlnsManager.AddNamespace("c", "collection");
-                    _xmlnsManager.AddNamespace("o", "object");
-                }
+                if (_xmlDoc != null) return;
+                _xmlDoc = new XmlDocument();
+                _xmlDoc.Load(_pdmFile);
+                _xmlnsManager = new XmlNamespaceManager(_xmlDoc.NameTable);
+                _xmlnsManager.AddNamespace("a", "attribute");
+                _xmlnsManager.AddNamespace("c", "collection");
+                _xmlnsManager.AddNamespace("o", "object");
             }
         }
 
@@ -69,6 +63,8 @@ namespace CodeGenerator.Pdm
             {
                 Models.Add(GetModel(xnModel));
             }
+
+            StructureReference();
         }
 
         /// <summary>
@@ -82,163 +78,7 @@ namespace CodeGenerator.Pdm
             if (xnModel != null)
                 SetNodeValueInfo(model, xnModel);
 
-            model.PackageInfos = GetPackageInfos(xnModel);
-            model.TableInfos = GetTableInfos(xnModel);
-
             return model;
-        }
-
-        /// <summary>
-        /// 获取Model或Package下的Packages
-        /// </summary>
-        /// <param name="xnModel"></param>
-        /// <returns></returns>
-        private List<PackageInfo> GetPackageInfos(XmlNode xnModel)
-        {
-            var packages = new List<PackageInfo>();
-            if (xnModel == null) return packages;
-
-            var xnPackages = xnModel.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == CPackages);
-            if (xnPackages == null) return packages;
-
-            foreach (XmlNode xnPackage in xnPackages)
-            {
-                var package = new PackageInfo();
-                SetNodeValueInfo(package, xnPackage);
-
-                package.PackageInfos = GetPackageInfos(xnPackage);
-                package.TableInfos = GetTableInfos(xnPackage);
-
-                packages.Add(package);
-            }
-
-            return packages.OrderBy(p => p.Code).ToList();
-        }
-
-        /// <summary>
-        /// 初始化"o:Model"的节点
-        /// </summary>
-        /// <param name="xnPackage"></param>
-        /// <returns></returns>
-        private List<TableInfo> GetTableInfos(XmlNode xnPackage)
-        {
-            var tables = new List<TableInfo>();
-            if (xnPackage == null) return tables;
-
-            var xnTables = xnPackage.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == CTables);
-            if (xnTables == null) return tables;
-
-            foreach (XmlNode xnTable in xnTables)
-            {
-                var table = new TableInfo();
-                SetNodeValueInfo(table, xnTable);
-
-                table.ColumnInfos = GetColumnInfos(xnTable);
-                if (table.ColumnInfos == null || table.ColumnInfos.Count <= 0) continue;
-
-                table.KeyInfos = GetKeyInfos(table, xnTable);
-                table.PrimaryKeys = GetPrimaryKeys(table, xnTable);
-
-                tables.Add(table);
-            }
-
-            Tables.AddRange(tables);
-            return tables;
-        }
-
-        /// <summary>
-        /// 获取Table下的Columns
-        /// </summary>
-        /// <param name="xnTable"></param>
-        /// <returns></returns>
-        private List<ColumnInfo> GetColumnInfos(XmlNode xnTable)
-        {
-            var columns = new List<ColumnInfo>();
-            if (xnTable == null) return columns;
-
-            var xnColumns = xnTable.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == CColumns);
-            if (xnColumns == null) return columns;
-
-            foreach (XmlNode xnColumn in xnColumns)
-            {
-                var column = new ColumnInfo();
-                SetNodeValueInfo(column, xnColumn);
-
-                columns.Add(column);
-            }
-
-            return columns;
-        }
-
-        /// <summary>
-        /// 获取Table下的KeyInfos
-        /// </summary>
-        /// <param name="table"></param>
-        /// <param name="xnTable"></param>
-        /// <returns></returns>
-        private List<KeyInfo> GetKeyInfos(TableInfo table, XmlNode xnTable)
-        {
-            var keyInfos = new List<KeyInfo>();
-            if (xnTable == null) return keyInfos;
-
-            var xnKeyInfos = xnTable.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == CKeys);
-            if (xnKeyInfos == null) return keyInfos;
-
-            foreach (XmlNode xnKey in xnKeyInfos)
-            {
-                var column = new KeyInfo();
-                SetNodeValueInfo(column, xnKey);
-                column.Columns = GetKeyColumns(table, xnKey);
-
-                keyInfos.Add(column);
-            }
-
-            return keyInfos;
-        }
-
-        /// <summary>
-        /// 获取Key下的Columns
-        /// </summary>
-        /// <param name="table"></param>
-        /// <param name="xnKey"></param>
-        /// <returns></returns>
-        private List<ColumnInfo> GetKeyColumns(TableInfo table, XmlNode xnKey)
-        {
-            var columns = new List<ColumnInfo>();
-            if (xnKey == null) return columns;
-
-            var xnKeyColumns = xnKey.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == CKeyColumns);
-            if (xnKeyColumns == null) return columns;
-
-            columns.AddRange(
-                xnKeyColumns.Cast<XmlElement>()
-                    .Select(
-                        xeKeyColumn => table.ColumnInfos.FirstOrDefault(o => o.Id == xeKeyColumn.GetAttribute("Ref")))
-                    .Where(column => column != null));
-
-            return columns;
-        }
-
-        /// <summary>
-        /// 获取table的PrimaryKey
-        /// </summary>
-        /// <param name="xnTable"></param>
-        /// <param name="table"></param>
-        /// <returns></returns>
-        private List<KeyInfo> GetPrimaryKeys(TableInfo table, XmlNode xnTable)
-        {
-            var primaryKeys = new List<KeyInfo>();
-            if (xnTable == null) return primaryKeys;
-
-            var xnPrimaryKey = xnTable.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == CPrimaryKey);
-            if (xnPrimaryKey == null) return primaryKeys;
-
-            primaryKeys.AddRange(
-                xnPrimaryKey.Cast<XmlElement>()
-                    .Select(element => table.KeyInfos.FirstOrDefault(o => o.Id == element.GetAttribute("Ref")))
-                    .Where(key => key != null));
-
-            return primaryKeys;
         }
 
         /// <summary>
@@ -249,45 +89,199 @@ namespace CodeGenerator.Pdm
         /// <param name="node"></param>
         private void SetNodeValueInfo<T>(T info, XmlNode node)
         {
-            var properties = typeof(T).GetProperties();
+            var properties = info.GetType().GetProperties();
+
             var childNodes = node.ChildNodes.Cast<XmlNode>().ToList();
 
             foreach (var property in properties)
             {
-                if (property.Name == "Id")
+                if (property.PropertyType.IsClass && property.PropertyType.GetConstructor(new Type[0]) != null)
                 {
-                    var element = (XmlElement)node;
-                    property.SetValue(info, element.GetAttribute("Id"));
-                }
-                else if (property.Name == "Mandatory")
-                {
-                    var mandatoryNode = childNodes.FirstOrDefault(o => o.Name == "a:Column.Mandatory");
-                    if (mandatoryNode == null) continue;
+                    var childObject =
+                        property.GetCustomAttributes(typeof(ChildObjectAttribute), false)
+                            .FirstOrDefault() as ChildObjectAttribute;
 
-                    property.SetValue(info, Convert.ToBoolean(Convert.ToInt32(mandatoryNode.InnerText)));
+                    if (childObject == null) continue;
+
+                    if (property.PropertyType.GetInterface("IList", false) != null)
+                    {
+                        var list = GetListChild(node, childObject);
+
+                        property.SetValue(info, list);
+                        continue;
+                    }
+
+                    var referenceTable = Activator.CreateInstance(property.PropertyType);
+
+                    var tableNode = node.ChildNodes.Cast<XmlNode>()
+                        .FirstOrDefault(o => o.Name == childObject.ChildNodeName);
+                    if (tableNode == null) continue;
+
+                    foreach (XmlNode xnTable in tableNode)
+                    {
+                        SetNodeValueInfo(referenceTable, xnTable);
+                    }
+
+                    property.SetValue(info, referenceTable);
                 }
                 else
                 {
-                    var childNode = childNodes.FirstOrDefault(o => o.Name == "a:" + property.Name);
-                    if (childNode == null) continue;
+                    var nodeAttribute =
+                        property.GetCustomAttributes(typeof(NodeAttributeAttribute), false)
+                            .FirstOrDefault() as NodeAttributeAttribute;
 
-                    switch (property.PropertyType.FullName)
+                    if (nodeAttribute != null)
                     {
-                        case "System.Int32":
-                            property.SetValue(info, Convert.ToInt32(childNode.InnerText));
-                            break;
-                        case "System.Boolean":
-                            bool value;
+                        var attributeName = string.IsNullOrEmpty(nodeAttribute.AttributeName)
+                            ? property.Name
+                            : nodeAttribute.AttributeName;
 
-                            if (!bool.TryParse(childNode.InnerText, out value))
-                                value = childNode.InnerText == "1";
-
-                            property.SetValue(info, value);
-                            break;
-                        default:
-                            property.SetValue(info, childNode.InnerText);
-                            break;
+                        var element = (XmlElement)node;
+                        property.SetValue(info, element.GetAttribute(attributeName));
                     }
+                    else
+                    {
+                        var nodeChild =
+                            property.GetCustomAttributes(typeof(NodeChildAttribute), false).FirstOrDefault() as NodeChildAttribute;
+
+                        var nodeName = string.IsNullOrEmpty(nodeChild?.ChildNodeName)
+                            ? property.Name
+                            : nodeChild.ChildNodeName;
+
+                        var childNode = childNodes.FirstOrDefault(o => o.Name == "a:" + nodeName);
+                        if (childNode == null) continue;
+
+                        switch (property.PropertyType.FullName)
+                        {
+                            case "System.Int32":
+                                property.SetValue(info, Convert.ToInt32(childNode.InnerText));
+                                break;
+                            case "System.Boolean":
+                                bool value;
+
+                                if (!bool.TryParse(childNode.InnerText, out value))
+                                    value = childNode.InnerText == "1";
+
+                                property.SetValue(info, value);
+                                break;
+                            default:
+                                property.SetValue(info, childNode.InnerText);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取集合子元素
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="childObjectAttribute"></param>
+        /// <returns></returns>
+        private object GetListChild(XmlNode node, ChildObjectAttribute childObjectAttribute)
+        {
+            if (childObjectAttribute.ElementType == null) return null;
+
+            var listType = GetLisTypeFromDictionary(childObjectAttribute.ElementType);
+            if (listType == null)
+            {
+                var typeName = $"System.Collections.Generic.List`1[[{childObjectAttribute.ElementType.AssemblyQualifiedName}]]";
+                listType = Type.GetType(typeName);
+
+                if (listType == null) return null;
+
+                _listTypeDictionary.Add(childObjectAttribute.ElementType, listType);
+            }
+
+            var list = Activator.CreateInstance(listType);
+
+            var xnChild = node.ChildNodes.Cast<XmlNode>().FirstOrDefault(o => o.Name == childObjectAttribute.ChildNodeName);
+            if (xnChild == null) return list;
+
+            foreach (XmlNode xnNode in xnChild)
+            {
+                var declaringObj = Activator.CreateInstance(childObjectAttribute.ElementType);
+                SetNodeValueInfo(declaringObj, xnNode);
+
+                AddElementToList(listType, list, declaringObj);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// 向指定集合实例中添加元素
+        /// </summary>
+        /// <param name="listType"></param>
+        /// <param name="instance"></param>
+        /// <param name="element"></param>
+        private void AddElementToList(Type listType, object instance, object element)
+        {
+            var method = listType.GetMethod("Add");
+            if (method == null) return;
+
+            method.Invoke(instance, new[] { element });
+
+            var table = element as TableInfo;
+            if (table != null)
+            {
+                table.ChildTableInfos = new List<ChildTableInfo>();
+                table.ReferenceTableInfos = new List<ReferenceTableInfo>();
+
+                Tables.Add((TableInfo)element);
+            }
+        }
+
+        /// <summary>
+        /// 从字典中获取指定元素类型的集合类型
+        /// </summary>
+        /// <param name="elementType"></param>
+        /// <returns></returns>
+        private Type GetLisTypeFromDictionary(Type elementType)
+        {
+            return !_listTypeDictionary.ContainsKey(elementType) ? null : _listTypeDictionary[elementType];
+        }
+
+        /// <summary>
+        /// 构建表之间的关联关系
+        /// </summary>
+        private void StructureReference()
+        {
+            foreach (var model in Models)
+            {
+                foreach (var reference in model.ReferenceInfos)
+                {
+                    var joinInfo = reference.ReferenceJoinInfos.FirstOrDefault();
+                    if (joinInfo?.FirstColumn == null || joinInfo.SecondColumn == null) continue;
+
+                    var parentTable = Tables.FirstOrDefault(t => t.Id == reference.ParentTable.Ref);
+                    var childTable = Tables.FirstOrDefault(t => t.Id == reference.ChildTable.Ref);
+                    if (parentTable == null || childTable == null) continue;
+
+                    var referenceKey =
+                        parentTable.ColumnInfos.FirstOrDefault(t => t.Id == joinInfo.FirstColumn.Ref ||
+                                                                    t.Id == joinInfo.SecondColumn.Ref);
+
+                    var foreignKey =
+                        childTable.ColumnInfos.FirstOrDefault(t => t.Id == joinInfo.FirstColumn.Ref ||
+                                                                    t.Id == joinInfo.SecondColumn.Ref);
+
+                    if (referenceKey == null || foreignKey == null) continue;
+                    if (referenceKey == foreignKey) continue;
+
+                    parentTable.ChildTableInfos.Add(new ChildTableInfo
+                    {
+                        ForeignKey = foreignKey,
+                        ChildTable = childTable
+                    });
+
+                    childTable.ReferenceTableInfos.Add(new ReferenceTableInfo
+                    {
+                        ForeignKey = foreignKey,
+                        ReferenceKey = referenceKey,
+                        ParentTable = parentTable
+                    });
                 }
             }
         }

@@ -10,9 +10,9 @@ namespace CodeGenerator.Generate
             get { return "BL.cs"; }
         }
 
-        public void Generate(TableInfo tableInfo, string classNamespace, string fileSavePath)
+        public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
-            var formatTableName = tableInfo.GetFormatTableName();
+            var formatTableName = table.GetFormatTableName();
             using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
@@ -28,7 +28,7 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("namespace {0}", classNamespace);
                 sw.WriteLine("{");
                 sw.WriteLine("    /// <summary>");
-                sw.WriteLine("    /// {0}BL", tableInfo.Comment);
+                sw.WriteLine("    /// {0}BL", table.Comment);
                 sw.WriteLine("    /// </summary>");
                 sw.WriteLine("    public class {0}BL", formatTableName);
                 sw.WriteLine("    {");

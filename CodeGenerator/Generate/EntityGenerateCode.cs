@@ -1,15 +1,11 @@
 ﻿using System.IO;
-using System.Linq;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
 {
     public class EntityGenerateCode : GenerateCodeBase, IGenerateCode
     {
-        protected override string FileName
-        {
-            get { return "Entity.cs"; }
-        }
+        protected override string FileName => ".cs";
 
         public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
@@ -20,9 +16,7 @@ namespace CodeGenerator.Generate
                 #region using
 
                 sw.WriteLine("using System;");
-                sw.WriteLine("using JG.Core.Cache;");
-                sw.WriteLine("using PetaPoco;");
-                sw.WriteLine("using Scm.Component.Common;");
+                sw.WriteLine("using System.Collections.Generic;");
                 sw.WriteLine();
 
                 #endregion
@@ -32,55 +26,75 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("    /// <summary>");
                 sw.WriteLine("    /// {0}", table.Comment);
                 sw.WriteLine("    /// </summary>");
-                sw.WriteLine("    [Serializable]");
-                sw.WriteLine("    [TableName(\"{0}\")]", table.Code);
-                sw.WriteLine("    [PrimaryKey(\"{0}\", autoIncrement = false)]", table.GetPrimaryKeyColumnName());
-                sw.WriteLine("    [CacheSetting(false, PropertyNameOfDBShard = \"ClientID\", PropertyNameOfCacheShard = \"ClientID\", PropertyNamesOfArea = \"ClientID\", ExpirationPolicy = EntityCacheExpirationPolicies.Stable)]");
 
-                sw.WriteLine("    public class {0}Entity : ScmBaseEntity", formatTableName);
+                sw.WriteLine("    public class {0}", formatTableName);
                 sw.WriteLine("    {");
 
-                #region New()
+                #region 构造函数
 
-                sw.WriteLine("        public static {0}Entity New()", formatTableName);
-                sw.WriteLine("        {");
-                sw.WriteLine("            var entity = new {0}Entity();", formatTableName);
-                sw.WriteLine("            entity.Init();");
-
-                foreach (
-                    var columnInfo in
-                        table.ColumnInfos.Where(
-                            c => !IgnoreColumns.Contains(c.Code) && c.GetColumnType() == "string"))
+                if (table.ChildTableInfos.Count > 0)
                 {
-                    sw.WriteLine("            entity.{0} = string.Empty;", columnInfo.Code);
-                }
+                    sw.WriteLine("        /// <summary>");
+                    sw.WriteLine("        /// 构造函数");
+                    sw.WriteLine("        /// </summary>");
+                    sw.WriteLine("        public {0}()", formatTableName);
+                    sw.WriteLine("        {");
 
-                sw.WriteLine();
-                sw.WriteLine("            return entity;");
-                sw.WriteLine("        }\r\n");
+                    foreach (var childTable in table.ChildTableInfos)
+                    {
+                        var propertyName = childTable.ChildTable.GetFormatTableName();
+                        var foreignKey = childTable.ForeignKey.Code.Substring(0, childTable.ForeignKey.Code.Length - 2);
+                        if (foreignKey != table.GetFormatTableName())
+                            propertyName = foreignKey + propertyName;
+
+                        sw.WriteLine("            {0} = new List<{1}>();", GetListPropertyName(propertyName), childTable.ChildTable.GetFormatTableName());
+                    }
+
+                    sw.WriteLine("        }");
+                    sw.WriteLine();
+                }
 
                 #endregion
 
                 #region 属性
 
-                sw.WriteLine("        #region 属性");
-                foreach (var columnInfo in table.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != table.GetPrimaryKeyColumnName()))
+                var flag = false;
+                foreach (var columnInfo in table.ColumnInfos)
                 {
-                    sw.WriteLine();
+                    if (flag)
+                        sw.WriteLine();
                     sw.WriteLine("        /// <summary>");
                     sw.WriteLine("        /// {0}", columnInfo.Comment);
                     sw.WriteLine("        /// </summary>");
                     sw.WriteLine("        public {0} {1} {2} get; set; {3}", columnInfo.GetColumnType(), columnInfo.Code, "{", "}");
+
+                    if (!flag)
+                        flag = true;
                 }
-                sw.WriteLine();
-                sw.WriteLine("        #endregion\r\n");
 
-                #endregion
+                foreach (var referenceTable in table.ReferenceTableInfos)
+                {
+                    var propertyName = referenceTable.ForeignKey.Code.Substring(0, referenceTable.ForeignKey.Code.Length - 2);
+                    if (propertyName != referenceTable.ParentTable.Code)
+                        propertyName += referenceTable.ParentTable.Code;
 
-                #region 扩展属性
+                    sw.WriteLine();
+                    sw.WriteLine("        /// <summary>");
+                    sw.WriteLine("        /// {0}", referenceTable.ForeignKey.Comment);
+                    sw.WriteLine("        /// </summary>");
+                    sw.WriteLine("        public virtual {0} {1} {2} get; set; {3}", referenceTable.ParentTable.GetFormatTableName(), propertyName, "{", "}");
+                }
 
-                sw.WriteLine("        #region 扩展属性");
-                sw.WriteLine("        #endregion");
+                foreach (var childTable in table.ChildTableInfos)
+                {
+                    var propertyName = childTable.ChildTable.Code;
+                    var foreignKey = childTable.ForeignKey.Code.Substring(0, childTable.ForeignKey.Code.Length - 2);
+                    if (foreignKey != table.Code)
+                        propertyName = foreignKey + propertyName;
+
+                    sw.WriteLine();
+                    sw.WriteLine("        public virtual ICollection<{0}> {1} {2} get; set; {3}", childTable.ChildTable.GetFormatTableName(), GetListPropertyName(propertyName), "{", "}");
+                }
 
                 #endregion
 

@@ -2,6 +2,7 @@
 {
     public class InfoBase
     {
+        [NodeAttribute]
         public string Id { get; set; }
 
         public string ObjectID { get; set; }

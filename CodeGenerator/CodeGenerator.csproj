@@ -124,7 +124,9 @@
     <Compile Include="Operate\GenerateOperate.cs" />
     <Compile Include="Operate\TreeModelOperate.cs" />
     <Compile Include="Operate\XmlNodeOperate.cs" />
+    <Compile Include="Pdm\NodeAttributeAttribute.cs" />
     <Compile Include="Pdm\InfoBase.cs" />
+    <Compile Include="Pdm\ReferenceInfo.cs" />
     <Compile Include="Pdm\TreeModel.cs" />
     <Compile Include="Pdm\LogHelper.cs" />
     <Compile Include="Pdm\ColumnInfo.cs" />

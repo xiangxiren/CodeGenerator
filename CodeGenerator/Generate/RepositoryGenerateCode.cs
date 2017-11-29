@@ -10,9 +10,9 @@ namespace CodeGenerator.Generate
             get { return "Repository.cs"; }
         }
 
-        public void Generate(TableInfo tableInfo, string classNamespace, string fileSavePath)
+        public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
-            var formatTableName = tableInfo.GetFormatTableName();
+            var formatTableName = table.GetFormatTableName();
             using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
@@ -31,7 +31,7 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("namespace {0}", classNamespace);
                 sw.WriteLine("{");
                 sw.WriteLine("    /// <summary>");
-                sw.WriteLine("    /// {0}Repository接口", tableInfo.Comment);
+                sw.WriteLine("    /// {0}Repository接口", table.Comment);
                 sw.WriteLine("    /// </summary>");
                 sw.WriteLine("    public interface I{0}Repository : IRepository<{0}Entity>", formatTableName);
                 sw.WriteLine("    {");
@@ -39,7 +39,7 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("    }");
                 sw.WriteLine();
                 sw.WriteLine("    /// <summary>");
-                sw.WriteLine("    /// {0}Repository实现", tableInfo.Comment);
+                sw.WriteLine("    /// {0}Repository实现", table.Comment);
                 sw.WriteLine("    /// </summary>");
                 sw.WriteLine("    public class {0}Repository : ExtRepository<{0}Entity>, I{0}Repository", formatTableName);
                 sw.WriteLine("    {");
