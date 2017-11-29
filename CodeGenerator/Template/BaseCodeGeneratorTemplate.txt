@@ -12,10 +12,10 @@ public class $FileName$GenerateCode : GenerateCodeBase, ICodeGenerator
 		
         var TableInfo = tableInfo;
         var Namespace = classNamespace;
-        var FormatTableName = TableInfo.GetFormatTableName();
+        var FormatTableName = TableInfo.TableName;
         var Comment = TableInfo.Comment;
         var TableName = TableInfo.Code;
-        var PrimaryKey = TableInfo.GetPrimaryKeyColumnName();
+        var PrimaryKey = TableInfo.PrimaryKeyCode;
 
 $Properties$
         #endregion

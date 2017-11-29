@@ -10,8 +10,7 @@ namespace CodeGenerator.Generate
 
         public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
-            var formatTableName = table.GetFormatTableName();
-            using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
+            using (var fs = new FileStream(GetFullFilePath(table.TableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using
@@ -24,13 +23,13 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("namespace {0}", classNamespace);
                 sw.WriteLine("{");
 
-                sw.WriteLine("    public class {0}Map : EntityTypeConfiguration<OfflineTireBasicInfo>", formatTableName);
+                sw.WriteLine("    public class {0}Map : EntityTypeConfiguration<OfflineTireBasicInfo>", table.TableName);
                 sw.WriteLine("    {");
 
-                sw.WriteLine("        public {0}Map()", table.GetFormatTableName());
+                sw.WriteLine("        public {0}Map()", table.TableName);
                 sw.WriteLine("        {");
                 sw.WriteLine("            // Primary Key");
-                sw.WriteLine("            HasKey(t => t.{0});", table.GetPrimaryKeyColumnName());
+                sw.WriteLine("            HasKey(t => t.{0});", table.PrimaryKeyCode);
                 sw.WriteLine();
 
                 var properties =
@@ -68,7 +67,7 @@ namespace CodeGenerator.Generate
                 }
 
                 sw.WriteLine("            // Table & Column Mappings");
-                sw.WriteLine("            ToTable(\"{0}\");", formatTableName);
+                sw.WriteLine("            ToTable(\"{0}\");", table.TableName);
 
                 foreach (var column in table.ColumnInfos)
                 {
@@ -85,13 +84,19 @@ namespace CodeGenerator.Generate
                     {
                         if (flag)
                             sw.WriteLine();
-                        var propertyName = reference.ParentTable.GetFormatTableName();
-                        var foreignKey = reference.ForeignKey.Code.Substring(0, reference.ForeignKey.Code.Length - 2);
-                        if (foreignKey != table.Code)
-                            propertyName = foreignKey + propertyName;
 
-                        sw.WriteLine("            {0}(t => t.{1})", reference.ForeignKey.Mandatory ? "HasRequired" : "HasOptional", reference.ForeignKey.Code);
-                        sw.WriteLine("                .WithMany(t => t.{0})", GetListPropertyName(propertyName));
+                        var listPropertyName = table.TableName;
+                        var foreignKey = reference.ForeignKey.Code.Substring(0, reference.ForeignKey.Code.Length - 2);
+                        if (foreignKey != table.TableName)
+                            listPropertyName = foreignKey + listPropertyName;
+
+                        var propertyName = foreignKey;
+                        if (propertyName != reference.ParentTable.TableName)
+                            propertyName += reference.ParentTable.TableName;
+
+
+                        sw.WriteLine("            {0}(t => t.{1})", reference.ForeignKey.Mandatory ? "HasRequired" : "HasOptional", propertyName);
+                        sw.WriteLine("                .WithMany(t => t.{0})", GetListPropertyName(listPropertyName));
                         sw.WriteLine("                .HasForeignKey(d => d.{0});", reference.ForeignKey.Code);
 
                         flag = true;

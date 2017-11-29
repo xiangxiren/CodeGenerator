@@ -5,15 +5,11 @@ namespace CodeGenerator.Generate
 {
     public class RepositoryGenerateCode : GenerateCodeBase, IGenerateCode
     {
-        protected override string FileName
-        {
-            get { return "Repository.cs"; }
-        }
+        protected override string FileName => "Repository.cs";
 
         public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
-            var formatTableName = table.GetFormatTableName();
-            using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
+            using (var fs = new FileStream(GetFullFilePath(table.TableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using
@@ -33,17 +29,17 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("    /// <summary>");
                 sw.WriteLine("    /// {0}Repository接口", table.Comment);
                 sw.WriteLine("    /// </summary>");
-                sw.WriteLine("    public interface I{0}Repository : IRepository<{0}Entity>", formatTableName);
+                sw.WriteLine("    public interface I{0}Repository : IRepository<{0}Entity>", table.TableName);
                 sw.WriteLine("    {");
-                sw.WriteLine("        PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex);", formatTableName);
+                sw.WriteLine("        PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex);", table.TableName);
                 sw.WriteLine("    }");
                 sw.WriteLine();
                 sw.WriteLine("    /// <summary>");
                 sw.WriteLine("    /// {0}Repository实现", table.Comment);
                 sw.WriteLine("    /// </summary>");
-                sw.WriteLine("    public class {0}Repository : ExtRepository<{0}Entity>, I{0}Repository", formatTableName);
+                sw.WriteLine("    public class {0}Repository : ExtRepository<{0}Entity>, I{0}Repository", table.TableName);
                 sw.WriteLine("    {");
-                sw.WriteLine("        public PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)", formatTableName);
+                sw.WriteLine("        public PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)", table.TableName);
                 sw.WriteLine("        {");
                 sw.WriteLine("            return this.GetPageEntities(pageSize, pageIndex, CachingExpirationType.ObjectCollection, () =>");
                 sw.WriteLine("            {");

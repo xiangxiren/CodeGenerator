@@ -5,16 +5,16 @@ namespace CodeGenerator.Pdm
     public class ReferenceInfo : InfoBase
     {
         [ChildObject("c:ParentTable")]
-        public ReferenceTable ParentTable { get; set; }
+        public RefInfo ParentTable { get; set; }
 
         [ChildObject("c:ChildTable")]
-        public ReferenceTable ChildTable { get; set; }
+        public RefInfo ChildTable { get; set; }
 
         [ChildObject("c:Joins", typeof(ReferenceJoinInfo))]
         public List<ReferenceJoinInfo> ReferenceJoinInfos { get; set; }
     }
 
-    public class ReferenceTable
+    public class RefInfo
     {
         [NodeAttribute]
         public string Ref { get; set; }
@@ -23,15 +23,9 @@ namespace CodeGenerator.Pdm
     public class ReferenceJoinInfo : InfoBase
     {
         [ChildObject("c:Object1")]
-        public ReferenceColumn FirstColumn { get; set; }
+        public RefInfo FirstColumn { get; set; }
 
         [ChildObject("c:Object2")]
-        public ReferenceColumn SecondColumn { get; set; }
-    }
-
-    public class ReferenceColumn
-    {
-        [NodeAttribute]
-        public string Ref { get; set; }
+        public RefInfo SecondColumn { get; set; }
     }
 }

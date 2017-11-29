@@ -68,8 +68,8 @@ namespace CodeGenerator.Generate
             foreach (var property in wrapper.Properties)
             {
                 if (!propertyDynamic.IsDefined(property.Name) && string.IsNullOrEmpty(property.Default))
-                    throw new Exception(string.Format("属性{0}未赋值",
-                        string.IsNullOrEmpty(property.Description) ? property.Name : property.Description));
+                    throw new Exception(
+                        $"属性{(string.IsNullOrEmpty(property.Description) ? property.Name : property.Description)}未赋值");
 
                 propertyBuilder.AppendLine(string.Format("        var {0} = {2}{1}{2};", property.Name,
                     propertyDynamic[property.Name], property.Type.ToLower() == "string" ? "\"" : ""));

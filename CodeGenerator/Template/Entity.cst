@@ -28,7 +28,7 @@ namespace <%=Namespace %>
         {
             var entity = new <%=FormatTableName %>Entity();
             entity.Init();
-            <%foreach (var columnInfo in TableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.GetColumnType() == "string")) {%>
+            <%foreach (var columnInfo in TableInfo.ColumnInfos) {%>
             entity.<%=columnInfo.Code %> = string.Empty;
             <%}%>
 
@@ -36,7 +36,7 @@ namespace <%=Namespace %>
         }
 
         #region 属性
-        <%foreach (var columnInfo in TableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != TableInfo.GetPrimaryKeyColumnName())) {%>
+        <%foreach (var columnInfo in TableInfo.ColumnInfos) {%>
 
         /// <summary>
         /// <%=columnInfo.Comment %>

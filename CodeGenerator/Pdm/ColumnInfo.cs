@@ -28,22 +28,23 @@ namespace CodeGenerator.Pdm
             if (DataType.ToUpper().Contains("VARCHAR")) return "string";
             if (DataType.ToUpper().Contains("NUMBER")) return "decimal";
             if (DataType.ToUpper().Contains("NUMERIC")) return "decimal";
+
             switch (DataType.ToUpper())
             {
                 case "INT":
                 case "INTEGER":
-                    return "int";
+                    return Mandatory ? "int" : "int?";
                 case "BIGINT":
                     return "long";
                 case "DATETIME":
                 case "DATE":
-                    return "DateTime";
+                    return Mandatory ? "DateTime" : "DateTime?";
                 case "BIT":
-                    return "bool";
+                    return Mandatory ? "bool" : "bool?";
                 case "TEXT":
                     return "string";
                 case "UNIQUEIDENTIFIER":
-                    return "Guid";
+                    return Mandatory ? "Guid" : "Guid?";
             }
 
             throw new Exception($"数据库列{Code}类型{DataType}无法转换为System基础类型");

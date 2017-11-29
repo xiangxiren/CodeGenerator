@@ -126,11 +126,8 @@ namespace CodeGenerator.Pdm
                 }
                 else
                 {
-                    var nodeAttribute =
-                        property.GetCustomAttributes(typeof(NodeAttributeAttribute), false)
-                            .FirstOrDefault() as NodeAttributeAttribute;
-
-                    if (nodeAttribute != null)
+                    if (property.GetCustomAttributes(typeof(NodeAttributeAttribute), false)
+                        .FirstOrDefault() is NodeAttributeAttribute nodeAttribute)
                     {
                         var attributeName = string.IsNullOrEmpty(nodeAttribute.AttributeName)
                             ? property.Name
@@ -157,9 +154,7 @@ namespace CodeGenerator.Pdm
                                 property.SetValue(info, Convert.ToInt32(childNode.InnerText));
                                 break;
                             case "System.Boolean":
-                                bool value;
-
-                                if (!bool.TryParse(childNode.InnerText, out value))
+                                if (!bool.TryParse(childNode.InnerText, out var value))
                                     value = childNode.InnerText == "1";
 
                                 property.SetValue(info, value);
@@ -223,14 +218,11 @@ namespace CodeGenerator.Pdm
 
             method.Invoke(instance, new[] { element });
 
-            var table = element as TableInfo;
-            if (table != null)
-            {
-                table.ChildTableInfos = new List<ChildTableInfo>();
-                table.ReferenceTableInfos = new List<ReferenceTableInfo>();
+            if (!(element is TableInfo table)) return;
+            table.ChildTableInfos = new List<ChildTableInfo>();
+            table.ReferenceTableInfos = new List<ReferenceTableInfo>();
 
-                Tables.Add((TableInfo)element);
-            }
+            Tables.Add((TableInfo)element);
         }
 
         /// <summary>

@@ -44,7 +44,10 @@ namespace CodeGenerator.Generate
                     break;
                 case "o":
                 case "s":
-                    replace = endChar + "es";
+                    replace += "es";
+                    break;
+                default:
+                    replace += "s";
                     break;
             }
 

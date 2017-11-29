@@ -5,15 +5,11 @@ namespace CodeGenerator.Generate
 {
     public class BlGenerateCode : GenerateCodeBase, IGenerateCode
     {
-        protected override string FileName
-        {
-            get { return "BL.cs"; }
-        }
+        protected override string FileName => "BL.cs";
 
         public void Generate(TableInfo table, string classNamespace, string fileSavePath)
         {
-            var formatTableName = table.GetFormatTableName();
-            using (var fs = new FileStream(GetFullFilePath(formatTableName, fileSavePath), FileMode.Create))
+            using (var fs = new FileStream(GetFullFilePath(table.TableName, fileSavePath), FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
                 #region using
@@ -30,43 +26,43 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("    /// <summary>");
                 sw.WriteLine("    /// {0}BL", table.Comment);
                 sw.WriteLine("    /// </summary>");
-                sw.WriteLine("    public class {0}BL", formatTableName);
+                sw.WriteLine("    public class {0}BL", table.TableName);
                 sw.WriteLine("    {");
-                sw.WriteLine("        private readonly I{0}Repository m{0}Repository;", formatTableName);
+                sw.WriteLine("        private readonly I{0}Repository m{0}Repository;", table.TableName);
                 sw.WriteLine();
                 sw.WriteLine("        #region 构造函数");
                 sw.WriteLine();
-                sw.WriteLine("        public {0}BL()", formatTableName);
-                sw.WriteLine("            : this(new {0}Repository())", formatTableName);
+                sw.WriteLine("        public {0}BL()", table.TableName);
+                sw.WriteLine("            : this(new {0}Repository())", table.TableName);
                 sw.WriteLine("        {");
                 sw.WriteLine();
                 sw.WriteLine("        }");
                 sw.WriteLine();
-                sw.WriteLine("        public {0}BL(I{0}Repository repository)", formatTableName);
+                sw.WriteLine("        public {0}BL(I{0}Repository repository)", table.TableName);
                 sw.WriteLine("        {");
-                sw.WriteLine("            this.m{0}Repository = repository ?? new {0}Repository();", formatTableName);
+                sw.WriteLine("            this.m{0}Repository = repository ?? new {0}Repository();", table.TableName);
                 sw.WriteLine("        }");
                 sw.WriteLine();
                 sw.WriteLine("        #endregion");
                 sw.WriteLine();
                 sw.WriteLine("        #region 业务逻辑");
                 sw.WriteLine();
-                sw.WriteLine("        public {0}Entity Get(object ID, bool isCopy = false)", formatTableName);
+                sw.WriteLine("        public {0}Entity Get(object ID, bool isCopy = false)", table.TableName);
                 sw.WriteLine("        {");
-                sw.WriteLine("            var entity = this.m{0}Repository.Get(ID);", formatTableName);
+                sw.WriteLine("            var entity = this.m{0}Repository.Get(ID);", table.TableName);
                 sw.WriteLine("            return entity != null && isCopy ? DataProcess.CloneObject(entity) : entity;");
                 sw.WriteLine("        }");
                 sw.WriteLine();
-                sw.WriteLine("        public PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)", formatTableName);
+                sw.WriteLine("        public PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)", table.TableName);
                 sw.WriteLine("        {");
-                sw.WriteLine("            return this.m{0}Repository.GetList(queryModel, pageSize, pageIndex);", formatTableName);
+                sw.WriteLine("            return this.m{0}Repository.GetList(queryModel, pageSize, pageIndex);", table.TableName);
                 sw.WriteLine("        }");
                 sw.WriteLine();
-                sw.WriteLine("        public {0}Entity Update({0}Entity entity)", formatTableName);
+                sw.WriteLine("        public {0}Entity Update({0}Entity entity)", table.TableName);
                 sw.WriteLine("        {");
                 sw.WriteLine("            entity.UpdateUserID = UserContext.CurrentUser.UserID;");
                 sw.WriteLine("            entity.UpdateDate = DateTimeUtil.GetNowDateTime();");
-                sw.WriteLine("            this.m{0}Repository.Update(entity);", formatTableName);
+                sw.WriteLine("            this.m{0}Repository.Update(entity);", table.TableName);
                 sw.WriteLine("            return entity;");
                 sw.WriteLine("        }");
                 sw.WriteLine();

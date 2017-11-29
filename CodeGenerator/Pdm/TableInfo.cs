@@ -13,29 +13,55 @@ namespace CodeGenerator.Pdm
         [ChildObject("c:Keys", typeof(KeyInfo))]
         public List<KeyInfo> KeyInfos { get; set; }
 
-        [ChildObject("c:PrimaryKey", typeof(KeyInfo))]
-        public List<KeyInfo> PrimaryKeys { get; set; }
+        [ChildObject("c:PrimaryKey", typeof(RefInfo))]
+        public List<RefInfo> PrimaryKeys { get; set; }
 
         public List<ChildTableInfo> ChildTableInfos { get; set; }
 
         public List<ReferenceTableInfo> ReferenceTableInfos { get; set; }
 
-        public string GetFormatTableName()
+        private string _tablename;
+        private bool _isTableNameInit;
+
+        public string TableName
         {
-            var index = Code.LastIndexOf('_');
-            return Code.Substring(index + 1);
+            get
+            {
+                if (_isTableNameInit) return _tablename;
+
+                var index = Code.LastIndexOf('_');
+                _tablename = Code.Substring(index + 1);
+
+                _isTableNameInit = true;
+                return _tablename;
+            }
         }
 
-        public string GetPrimaryKeyColumnName()
+        private string _primaryKeyCode;
+        private bool _isPrimaryKeyCodeInit;
+
+        public string PrimaryKeyCode
         {
-            if (PrimaryKeys?.FirstOrDefault() == null ) return string.Empty;
+            get
+            {
+                if (_isPrimaryKeyCodeInit) return _primaryKeyCode;
 
-            var primaryKey = PrimaryKeys.FirstOrDefault();
+                var primaryKey = PrimaryKeys.FirstOrDefault();
+                if (primaryKey == null) return string.Empty;
 
-            if (primaryKey?.Columns == null ) return string.Empty;
+                var keyInfo = KeyInfos.FirstOrDefault(t => t.Id == primaryKey.Ref);
 
-            var column = primaryKey.Columns.FirstOrDefault();
-            return column == null ? string.Empty : column.Code;
+                var key = keyInfo?.Columns.FirstOrDefault();
+                if (key == null) return string.Empty;
+
+                var column = ColumnInfos.FirstOrDefault(t => t.Id == key.Ref);
+                if (column == null) return string.Empty;
+
+                _primaryKeyCode = column.Code;
+                _isPrimaryKeyCodeInit = true;
+
+                return _primaryKeyCode;
+            }
         }
     }
 
@@ -49,9 +75,9 @@ namespace CodeGenerator.Pdm
     public class ReferenceTableInfo
     {
         public TableInfo ParentTable { get; set; }
-        
+
         public ColumnInfo ReferenceKey { get; set; }
-        
+
         public ColumnInfo ForeignKey { get; set; }
     }
 }

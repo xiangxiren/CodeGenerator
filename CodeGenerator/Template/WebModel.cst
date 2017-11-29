@@ -18,7 +18,7 @@ namespace <%=Namespace %>
     public class <%=FormatTableName %>WebModel : BaseWebModel
     {
         #region 属性
-        <%foreach (var columnInfo in tableInfo.ColumnInfos.Where(c => !IgnoreColumns.Contains(c.Code) && c.Code != PrimaryKey)){%>
+        <%foreach (var columnInfo in tableInfo.ColumnInfos){%>
 
         /// <summary>
         /// <%=columnInfo.Comment %>
@@ -53,8 +53,7 @@ namespace <%=Namespace %>
             {
                 entity = <%=FormatTableName %>Entity.New();
             }
-            <%foreach (var columnInfo in tableInfo.ColumnInfos.Where(
-                    c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName()))
+            <%foreach (var columnInfo in tableInfo.ColumnInfos)
                 { 
                 var columnType = columnInfo.GetColumnType();
                 if (columnInfo.SystemType == "string"){%>
@@ -81,8 +80,7 @@ namespace <%=Namespace %>
             if (entity == null) return null;
             var model = new <%=FormatTableName %>WebModel();
             model.Init(entity);
-            <%foreach (var columnInfo in tableInfo.ColumnInfos.Where(
-                    c => !IgnoreColumns.Contains(c.Code) && c.Code != tableInfo.GetPrimaryKeyColumnName())) {%>
+            <%foreach (var columnInfo in tableInfo.ColumnInfos) {%>
             model.<%=columnInfo.Code %> = entity.<%=columnInfo.Code %>;
             <%} %>
 

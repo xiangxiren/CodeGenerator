@@ -32,8 +32,6 @@ namespace CodeGenerator.Operate
         public static void Init(List<TableInfo> tableInfos)
         {
             Context.TableInfos = tableInfos;
-
-            SetTableColumnPrimaryKeyValue(tableInfos);
         }
 
         public List<ColumnInfo> GetColumnDataGridDataSource(string tableId)
@@ -49,21 +47,7 @@ namespace CodeGenerator.Operate
                 }
             }
 
-           return list;
-        }
-
-        private static void SetTableColumnPrimaryKeyValue(List<TableInfo> tableInfos)
-        {
-            tableInfos.ForEach(t =>
-            {
-                t.PrimaryKeys.ForEach(k =>
-                {
-                    k.Columns.ForEach(c =>
-                    {
-                        c.PrimaryKey = true;
-                    });
-                });
-            });
+            return list;
         }
     }
 }
