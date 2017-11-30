@@ -85,18 +85,13 @@ namespace CodeGenerator.Generate
                         if (flag)
                             sw.WriteLine();
 
-                        var listPropertyName = table.TableName;
-                        var foreignKey = reference.ForeignKey.Code.Substring(0, reference.ForeignKey.Code.Length - 2);
-                        if (foreignKey != table.TableName)
-                            listPropertyName = foreignKey + listPropertyName;
+                        var childTableInfo =
+                            reference.ParentTable.ChildTableInfos.FirstOrDefault(
+                                t => t.ChildTable.Id == table.Id && t.ForeignKey.Id == reference.ForeignKey.Id);
+                        if (childTableInfo == null) continue;
 
-                        var propertyName = foreignKey;
-                        if (propertyName != reference.ParentTable.TableName)
-                            propertyName += reference.ParentTable.TableName;
-
-
-                        sw.WriteLine("            {0}(t => t.{1})", reference.ForeignKey.Mandatory ? "HasRequired" : "HasOptional", propertyName);
-                        sw.WriteLine("                .WithMany(t => t.{0})", GetListPropertyName(listPropertyName));
+                        sw.WriteLine("            {0}(t => t.{1})", reference.ForeignKey.Mandatory ? "HasRequired" : "HasOptional", reference.ParentPropertyName);
+                        sw.WriteLine("                .WithMany(t => t.{0})", GetListPropertyName(childTableInfo.ChildPropertyName));
                         sw.WriteLine("                .HasForeignKey(d => d.{0});", reference.ForeignKey.Code);
 
                         flag = true;

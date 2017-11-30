@@ -148,19 +148,22 @@ namespace CodeGenerator.Pdm
                         var childNode = childNodes.FirstOrDefault(o => o.Name == "a:" + nodeName);
                         if (childNode == null) continue;
 
+                        var innerText = childNode.InnerText;
+                        if (!string.IsNullOrEmpty(innerText)) innerText = innerText.Replace("\r\n", "");
+
                         switch (property.PropertyType.FullName)
                         {
                             case "System.Int32":
-                                property.SetValue(info, Convert.ToInt32(childNode.InnerText));
+                                property.SetValue(info, Convert.ToInt32(innerText));
                                 break;
                             case "System.Boolean":
-                                if (!bool.TryParse(childNode.InnerText, out var value))
-                                    value = childNode.InnerText == "1";
+                                if (!bool.TryParse(innerText, out var value))
+                                    value = innerText == "1";
 
                                 property.SetValue(info, value);
                                 break;
                             default:
-                                property.SetValue(info, childNode.InnerText);
+                                property.SetValue(info, innerText);
                                 break;
                         }
                     }
@@ -265,17 +268,38 @@ namespace CodeGenerator.Pdm
                     parentTable.ChildTableInfos.Add(new ChildTableInfo
                     {
                         ForeignKey = foreignKey,
-                        ChildTable = childTable
+                        ChildTable = childTable,
+                        ChildPropertyName = GetChildPropertyName(parentTable, childTable, foreignKey)
                     });
 
                     childTable.ReferenceTableInfos.Add(new ReferenceTableInfo
                     {
                         ForeignKey = foreignKey,
                         ReferenceKey = referenceKey,
-                        ParentTable = parentTable
+                        ParentTable = parentTable,
+                        ParentPropertyName = GetParentPropertyName(parentTable, foreignKey)
                     });
                 }
             }
+        }
+
+        private string GetChildPropertyName(TableInfo parentTable, TableInfo childTable, ColumnInfo foreignKey)
+        {
+            var propertyName = childTable.TableName;
+            var foreignKeyCode = foreignKey.Code.Substring(0, foreignKey.Code.Length - 2);
+            if (foreignKeyCode != parentTable.TableName)
+                propertyName = foreignKeyCode + propertyName;
+
+            return propertyName;
+        }
+
+        private string GetParentPropertyName(TableInfo parentTable, ColumnInfo foreignKey)
+        {
+            var propertyName = foreignKey.Code.Substring(0, foreignKey.Code.Length - 2);
+            if (propertyName != parentTable.TableName)
+                propertyName += parentTable.TableName;
+
+            return propertyName;
         }
     }
 }

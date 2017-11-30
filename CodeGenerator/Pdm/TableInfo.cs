@@ -70,6 +70,8 @@ namespace CodeGenerator.Pdm
         public ColumnInfo ForeignKey { get; set; }
 
         public TableInfo ChildTable { get; set; }
+
+        public string ChildPropertyName { get; set; }
     }
 
     public class ReferenceTableInfo
@@ -79,5 +81,7 @@ namespace CodeGenerator.Pdm
         public ColumnInfo ReferenceKey { get; set; }
 
         public ColumnInfo ForeignKey { get; set; }
+
+        public string ParentPropertyName { get; set; }
     }
 }

@@ -41,12 +41,8 @@ namespace CodeGenerator.Generate
 
                     foreach (var childTable in table.ChildTableInfos)
                     {
-                        var propertyName = childTable.ChildTable.TableName;
-                        var foreignKey = childTable.ForeignKey.Code.Substring(0, childTable.ForeignKey.Code.Length - 2);
-                        if (foreignKey != table.TableName)
-                            propertyName = foreignKey + propertyName;
-
-                        sw.WriteLine("            {0} = new List<{1}>();", GetListPropertyName(propertyName), childTable.ChildTable.TableName);
+                        sw.WriteLine("            {0} = new List<{1}>();",
+                            GetListPropertyName(childTable.ChildPropertyName), childTable.ChildTable.TableName);
                     }
 
                     sw.WriteLine("        }");
@@ -73,26 +69,19 @@ namespace CodeGenerator.Generate
 
                 foreach (var referenceTable in table.ReferenceTableInfos)
                 {
-                    var propertyName = referenceTable.ForeignKey.Code.Substring(0, referenceTable.ForeignKey.Code.Length - 2);
-                    if (propertyName != referenceTable.ParentTable.TableName)
-                        propertyName += referenceTable.ParentTable.TableName;
-
                     sw.WriteLine();
                     sw.WriteLine("        /// <summary>");
                     sw.WriteLine("        /// {0}", referenceTable.ForeignKey.Comment);
                     sw.WriteLine("        /// </summary>");
-                    sw.WriteLine("        public virtual {0} {1} {2} get; set; {3}", referenceTable.ParentTable.TableName, propertyName, "{", "}");
+                    sw.WriteLine("        public virtual {0} {1} {2} get; set; {3}",
+                        referenceTable.ParentTable.TableName, referenceTable.ParentPropertyName, "{", "}");
                 }
 
                 foreach (var childTable in table.ChildTableInfos)
                 {
-                    var propertyName = childTable.ChildTable.TableName;
-                    var foreignKey = childTable.ForeignKey.Code.Substring(0, childTable.ForeignKey.Code.Length - 2);
-                    if (foreignKey != table.TableName)
-                        propertyName = foreignKey + propertyName;
-
                     sw.WriteLine();
-                    sw.WriteLine("        public virtual ICollection<{0}> {1} {2} get; set; {3}", childTable.ChildTable.TableName, GetListPropertyName(propertyName), "{", "}");
+                    sw.WriteLine("        public virtual ICollection<{0}> {1} {2} get; set; {3}",
+                        childTable.ChildTable.TableName, GetListPropertyName(childTable.ChildPropertyName), "{", "}");
                 }
 
                 #endregion
