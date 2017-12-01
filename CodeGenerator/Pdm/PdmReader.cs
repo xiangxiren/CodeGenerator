@@ -233,10 +233,7 @@ namespace CodeGenerator.Pdm
         /// </summary>
         /// <param name="elementType"></param>
         /// <returns></returns>
-        private Type GetLisTypeFromDictionary(Type elementType)
-        {
-            return !_listTypeDictionary.ContainsKey(elementType) ? null : _listTypeDictionary[elementType];
-        }
+        private Type GetLisTypeFromDictionary(Type elementType) => !_listTypeDictionary.ContainsKey(elementType) ? null : _listTypeDictionary[elementType];
 
         /// <summary>
         /// 构建表之间的关联关系

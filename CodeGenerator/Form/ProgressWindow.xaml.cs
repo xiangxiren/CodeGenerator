@@ -52,7 +52,7 @@ namespace CodeGenerator.Form
                                 new EntityGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
                                 break;
                             case GenerateType.WebModel:
-                                new WebModelGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
+                                new MapGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
                                 break;
                             case GenerateType.Repository:
                                 new RepositoryGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);

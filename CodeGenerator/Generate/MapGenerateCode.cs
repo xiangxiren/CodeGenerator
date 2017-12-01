@@ -4,7 +4,7 @@ using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
 {
-    public class WebModelGenerateCode : GenerateCodeBase, IGenerateCode
+    public class MapGenerateCode : GenerateCodeBase, IGenerateCode
     {
         protected override string FileName => "Map.cs";
 
