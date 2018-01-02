@@ -25,6 +25,7 @@ namespace CodeGenerator.Pdm
 
         public string GetColumnType()
         {
+            if (DataType.ToUpper().Contains("CHAR")) return "string";
             if (DataType.ToUpper().Contains("VARCHAR")) return "string";
             if (DataType.ToUpper().Contains("NUMBER")) return "decimal";
             if (DataType.ToUpper().Contains("NUMERIC")) return "decimal";
@@ -36,6 +37,8 @@ namespace CodeGenerator.Pdm
                     return Mandatory ? "int" : "int?";
                 case "BIGINT":
                     return "long";
+                case "SMALLINT":
+                    return "short";
                 case "DATETIME":
                 case "DATE":
                     return Mandatory ? "DateTime" : "DateTime?";

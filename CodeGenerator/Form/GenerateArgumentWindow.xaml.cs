@@ -49,12 +49,12 @@ namespace CodeGenerator.Form
                 case "BtnWebModelFilePath":
                     SelectFileSavePath(TxtWebModelFilePath);
                     break;
-                case "BtnRepositoryFilePath":
-                    SelectFileSavePath(TxtRepositoryFilePath);
-                    break;
-                case "BtnBlFilePath":
-                    SelectFileSavePath(TxtBlFilePath);
-                    break;
+                    //case "BtnRepositoryFilePath":
+                    //    SelectFileSavePath(TxtRepositoryFilePath);
+                    //    break;
+                    //case "BtnBlFilePath":
+                    //    SelectFileSavePath(TxtBlFilePath);
+                    //    break;
             }
         }
 
@@ -81,9 +81,9 @@ namespace CodeGenerator.Form
 
             if (!GetGenerateArgument(CbWebModel, TxtWebModelNamespace, TxtWebModelFilePath, BtnWebModelFilePath, GenerateType.WebModel)) return;
 
-            if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
+            //if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
 
-            if (!GetGenerateArgument(CbBl, TxtBlNamespace, TxtBlFilePath, BtnBlFilePath, GenerateType.Bl)) return;
+            //if (!GetGenerateArgument(CbBl, TxtBlNamespace, TxtBlFilePath, BtnBlFilePath, GenerateType.Bl)) return;
 
             WriteGenerateArgumentFile();
             DialogResult = true;
@@ -96,14 +96,14 @@ namespace CodeGenerator.Form
 
             if (string.IsNullOrEmpty(namespaceTextBox.Text))
             {
-                MessageBox.Show(this, string.Format("如果要生成{0}，请输入命名空间", generateType), "提示");
+                MessageBox.Show(this, $"如果要生成{generateType}，请输入命名空间", "提示");
                 namespaceTextBox.Focus();
 
                 return false;
             }
             if (string.IsNullOrEmpty(filePathTextBox.Text))
             {
-                MessageBox.Show(this, string.Format("如果要生成{0}，请选择文件保存目录", generateType), "提示");
+                MessageBox.Show(this, $"如果要生成{generateType}，请选择文件保存目录", "提示");
                 filePathButton.Focus();
 
                 return false;
@@ -168,12 +168,12 @@ namespace CodeGenerator.Form
                                 case GenerateType.WebModel:
                                     SetValueFromConfig(CbWebModel, TxtWebModelNamespace, TxtWebModelFilePath, arr);
                                     break;
-                                case GenerateType.Repository:
-                                    SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, arr);
-                                    break;
-                                case GenerateType.Bl:
-                                    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, arr);
-                                    break;
+                                    //case GenerateType.Repository:
+                                    //    SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, arr);
+                                    //    break;
+                                    //case GenerateType.Bl:
+                                    //    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, arr);
+                                    //    break;
                             }
                         }
                     }

@@ -13,7 +13,7 @@
         ResizeMode="NoResize"
         Icon="/CodeGenerator;component/House.ico"
         KeyDown="GenerateArgumentWindow_OnKeyDown">
-    
+
     <Grid HorizontalAlignment="Right" Width="712">
         <Grid.RowDefinitions>
             <RowDefinition Height="75*"/>
@@ -31,14 +31,14 @@
             <TextBlock Text="Entiy" Style="{StaticResource LabStyle}" />
         </DockPanel>
         <DockPanel Grid.Row="1" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
-            <TextBlock Text="WebModel" Style="{StaticResource LabStyle}" />
+            <TextBlock Text="Map" Style="{StaticResource LabStyle}" />
         </DockPanel>
-        <DockPanel Grid.Row="2" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
+        <!--<DockPanel Grid.Row="2" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
             <TextBlock Text="Repository" Style="{StaticResource LabStyle}" />
         </DockPanel>
         <DockPanel Grid.Row="3" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
             <TextBlock Text="BL" Style="{StaticResource LabStyle}" />
-        </DockPanel>
+        </DockPanel>-->
 
         <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
             <CheckBox Name="CbEntity" Style="{StaticResource CbStyle}">生成</CheckBox>
@@ -62,7 +62,7 @@
 
             <Button Name="BtnWebModelFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
-        <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
+        <!--<DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
             <CheckBox Name="CbRepository" Style="{StaticResource CbStyle}">生成</CheckBox>
 
             <TextBlock Text="命名空间:" Style="{StaticResource LabStyle}" Margin="10 0 0 0"/>
@@ -83,8 +83,8 @@
             <TextBox Name="TxtBlFilePath" Style="{StaticResource TxtStyle}" />
 
             <Button Name="BtnBlFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
-        </DockPanel>
-        
+        </DockPanel>-->
+
         <DockPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" LastChildFill="False" Margin="0,0,20,0" VerticalAlignment="Center">
             <Button Name="BtnSave" Click="BtnSave_OnClick" FontSize="16" Width="90">确定（F5）</Button>
             <Button Name="BtnCancel" Click="BtnCancel_OnClick" FontSize="16" Width="90" Margin="10,0,0,0">取消（Esc）</Button>

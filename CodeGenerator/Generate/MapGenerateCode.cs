@@ -23,7 +23,7 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("namespace {0}", classNamespace);
                 sw.WriteLine("{");
 
-                sw.WriteLine("    public class {0}Map : EntityTypeConfiguration<OfflineTireBasicInfo>", table.TableName);
+                sw.WriteLine("    public class {0}Map : EntityTypeConfiguration<{0}>", table.TableName);
                 sw.WriteLine("    {");
 
                 sw.WriteLine("        public {0}Map()", table.TableName);

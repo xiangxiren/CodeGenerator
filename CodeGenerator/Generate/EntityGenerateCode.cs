@@ -59,7 +59,7 @@ namespace CodeGenerator.Generate
                     if (flag)
                         sw.WriteLine();
                     sw.WriteLine("        /// <summary>");
-                    sw.WriteLine("        /// {0}", columnInfo.Comment);
+                    sw.WriteLine("        /// {0}", string.IsNullOrEmpty(columnInfo.Comment) && columnInfo.Code == table.PrimaryKeyCode ? "主键" : columnInfo.Comment);
                     sw.WriteLine("        /// </summary>");
                     sw.WriteLine("        public {0} {1} {2} get; set; {3}", columnInfo.GetColumnType(), columnInfo.Code, "{", "}");
 
@@ -71,7 +71,7 @@ namespace CodeGenerator.Generate
                 {
                     sw.WriteLine();
                     sw.WriteLine("        /// <summary>");
-                    sw.WriteLine("        /// {0}", referenceTable.ForeignKey.Comment);
+                    sw.WriteLine("        /// {0}", string.IsNullOrEmpty(referenceTable.ForeignKey.Comment) ? "" : referenceTable.ForeignKey.Comment.ToUpper().Replace("ID", ""));
                     sw.WriteLine("        /// </summary>");
                     sw.WriteLine("        public virtual {0} {1} {2} get; set; {3}",
                         referenceTable.ParentTable.TableName, referenceTable.ParentPropertyName, "{", "}");
