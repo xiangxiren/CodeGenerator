@@ -45,6 +45,7 @@ namespace CodeGenerator.Generate
                         {
                             sw.WriteLine("            Property(t => t.{0})", info.Code);
                             sw.WriteLine("                .IsRequired()");
+                            sw.WriteLine();
                             continue;
                         }
                         if (info.DataType.ToUpper().Contains("VARCHAR"))
@@ -53,6 +54,7 @@ namespace CodeGenerator.Generate
                             if (info.Mandatory)
                                 sw.WriteLine("                .IsRequired()");
                             sw.WriteLine("                .HasMaxLength({0});", info.Length);
+                            sw.WriteLine();
                             continue;
                         }
                         if (info.DataType.ToUpper().Contains("NUMERIC"))
@@ -61,9 +63,9 @@ namespace CodeGenerator.Generate
                             if (info.Mandatory)
                                 sw.WriteLine("                .IsRequired()");
                             sw.WriteLine("                .HasPrecision({0}, {1});", info.Length, info.Precision);
+                            sw.WriteLine();
                         }
                     }
-                    sw.WriteLine();
                 }
 
                 sw.WriteLine("            // Table & Column Mappings");
@@ -71,7 +73,7 @@ namespace CodeGenerator.Generate
 
                 foreach (var column in table.ColumnInfos)
                 {
-                    sw.WriteLine("            Property(t => t.Id).HasColumnName(\"{0}\");", column.Code);
+                    sw.WriteLine("            Property(t => t.{0}).HasColumnName(\"{0}\");", column.Code);
                 }
 
                 if (table.ReferenceTableInfos.Count > 0)

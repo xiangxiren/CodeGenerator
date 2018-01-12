@@ -48,6 +48,8 @@ namespace CodeGenerator.Pdm
                     return "string";
                 case "UNIQUEIDENTIFIER":
                     return Mandatory ? "Guid" : "Guid?";
+                case "TINYINT":
+                    return Mandatory ? "byte" : "byte?";
             }
 
             throw new Exception($"数据库列{Code}类型{DataType}无法转换为System基础类型");
