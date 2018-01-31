@@ -293,6 +293,10 @@ namespace CodeGenerator.Pdm
         private string GetParentPropertyName(TableInfo parentTable, ColumnInfo foreignKey)
         {
             var propertyName = foreignKey.Code.Substring(0, foreignKey.Code.Length - 2);
+
+            if (propertyName.EndsWith(parentTable.TableName) || propertyName.EndsWith(parentTable.TableName.Replace("Zt", "")))
+                return propertyName;
+
             if (propertyName != parentTable.TableName)
                 propertyName += parentTable.TableName;
 

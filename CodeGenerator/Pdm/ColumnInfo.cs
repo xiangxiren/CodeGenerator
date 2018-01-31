@@ -29,6 +29,7 @@ namespace CodeGenerator.Pdm
             if (DataType.ToUpper().Contains("VARCHAR")) return "string";
             if (DataType.ToUpper().Contains("NUMBER")) return "decimal";
             if (DataType.ToUpper().Contains("NUMERIC")) return "decimal";
+            if (DataType.ToUpper().Contains("DECIMAL")) return "decimal";
 
             switch (DataType.ToUpper())
             {
