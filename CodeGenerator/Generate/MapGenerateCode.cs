@@ -102,8 +102,8 @@ namespace CodeGenerator.Generate
 
                 sw.WriteLine("        }");
                 sw.WriteLine("    }");
-                sw.WriteLine("}");
-                sw.WriteLine();
+                sw.Write("}");
+                //sw.WriteLine();
 
                 sw.Flush();
             }

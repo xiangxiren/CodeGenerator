@@ -31,23 +31,23 @@ namespace CodeGenerator.Generate
 
                 #region 构造函数
 
-                if (table.ChildTableInfos.Count > 0)
-                {
-                    sw.WriteLine("        /// <summary>");
-                    sw.WriteLine("        /// 构造函数");
-                    sw.WriteLine("        /// </summary>");
-                    sw.WriteLine("        public {0}()", table.TableName);
-                    sw.WriteLine("        {");
-
-                    foreach (var childTable in table.ChildTableInfos)
-                    {
-                        sw.WriteLine("            {0} = new List<{1}>();",
-                            GetListPropertyName(childTable.ChildPropertyName), childTable.ChildTable.TableName);
-                    }
-
-                    sw.WriteLine("        }");
-                    sw.WriteLine();
-                }
+                //                if (table.ChildTableInfos.Count > 0)
+                //                {
+                //                    sw.WriteLine("        /// <summary>");
+                //                    sw.WriteLine("        /// 构造函数");
+                //                    sw.WriteLine("        /// </summary>");
+                //                    sw.WriteLine("        public {0}()", table.TableName);
+                //                    sw.WriteLine("        {");
+                //
+                //                    foreach (var childTable in table.ChildTableInfos)
+                //                    {
+                //                        sw.WriteLine("            {0} = new List<{1}>();",
+                //                            GetListPropertyName(childTable.ChildPropertyName), childTable.ChildTable.TableName);
+                //                    }
+                //
+                //                    sw.WriteLine("        }");
+                //                    sw.WriteLine();
+                //                }
 
                 #endregion
 
