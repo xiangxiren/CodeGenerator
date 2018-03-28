@@ -37,7 +37,7 @@ namespace CodeGenerator.Pdm
                 case "INTEGER":
                     return Mandatory ? "int" : "int?";
                 case "BIGINT":
-                    return "long";
+                    return Mandatory ? "long" : "long?";
                 case "SMALLINT":
                     return "short";
                 case "DATETIME":
