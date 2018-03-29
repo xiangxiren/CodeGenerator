@@ -44,17 +44,28 @@ namespace CodeGenerator.Generate
                         if (info.DataType.ToUpper().Contains("TEXT") && info.Mandatory)
                         {
                             sw.WriteLine("            Property(t => t.{0})", info.Code);
-                            sw.WriteLine("                .IsRequired()");
+                            sw.WriteLine("                .IsRequired();");
                             sw.WriteLine();
                             continue;
                         }
                         if (info.DataType.ToUpper().Contains("VARCHAR"))
                         {
-                            sw.WriteLine("            Property(t => t.{0})", info.Code);
-                            if (info.Mandatory)
-                                sw.WriteLine("                .IsRequired()");
-                            sw.WriteLine("                .HasMaxLength({0});", info.Length);
-                            sw.WriteLine();
+                            if (info.Length > 0 || info.Mandatory)
+                            {
+                                sw.WriteLine("            Property(t => t.{0})", info.Code);
+                                if (info.Length == 0)
+                                {
+                                    if (info.Mandatory)
+                                        sw.WriteLine("                .IsRequired();");
+                                }
+                                else
+                                {
+                                    if (info.Mandatory)
+                                        sw.WriteLine("                .IsRequired()");
+                                    sw.WriteLine("                .HasMaxLength({0});", info.Length);
+                                }
+                                sw.WriteLine();
+                            }
                             continue;
                         }
                         if (info.DataType.ToUpper().Contains("NUMERIC"))

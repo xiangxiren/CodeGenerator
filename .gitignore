@@ -246,3 +246,4 @@ ModelManifest.xml
 *.cst
 *.pdm
 /CodeGenerator.sln.DotSettings
+/.localhistory/codegenerator/generate
