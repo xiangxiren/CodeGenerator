@@ -24,7 +24,7 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("namespace {0}", generateArgument.ContextNamespace);
                 sw.WriteLine("{");
 
-                sw.WriteLine("    public partial class {0}", generateArgument.ContextName);
+                sw.WriteLine("    public partial class {0} : DbContext", generateArgument.ContextName);
                 sw.WriteLine("    {");
 
                 #region 构造函数
@@ -48,7 +48,7 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("        /// <summary>");
                     sw.WriteLine("        /// {0}", table.Comment);
                     sw.WriteLine("        /// </summary>");
-                    sw.WriteLine("        public DbSet<{0}> {0}s {1} get; set; {2}", GetListPropertyName(table.TableName), "{", "}");
+                    sw.WriteLine("        public DbSet<{0}> {1} {2} get; set; {3}", table.TableName, GetListPropertyName(table.TableName), "{", "}");
 
                     if (!flag)
                         flag = true;
@@ -61,7 +61,7 @@ namespace CodeGenerator.Generate
                 flag = false;
                 foreach (var table in tables)
                 {
-                    sw.WriteLine("            modelBuilder.Configurations.Add(new {0}());", table.TableName);
+                    sw.WriteLine("            modelBuilder.Configurations.Add(new {0}Map());", table.TableName);
                 }
 
                 sw.WriteLine("        }");
