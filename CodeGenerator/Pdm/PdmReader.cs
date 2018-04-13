@@ -97,11 +97,8 @@ namespace CodeGenerator.Pdm
             {
                 if (property.PropertyType.IsClass && property.PropertyType.GetConstructor(new Type[0]) != null)
                 {
-                    var childObject =
-                        property.GetCustomAttributes(typeof(ChildObjectAttribute), false)
-                            .FirstOrDefault() as ChildObjectAttribute;
-
-                    if (childObject == null) continue;
+                    if (!(property.GetCustomAttributes(typeof(ChildObjectAttribute), false)
+                        .FirstOrDefault() is ChildObjectAttribute childObject)) continue;
 
                     if (property.PropertyType.GetInterface("IList", false) != null)
                     {

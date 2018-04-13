@@ -15,7 +15,7 @@ namespace CodeGenerator.Form
     public partial class ProgressWindow
     {
         private readonly IList<TableInfo> _tableInfos;
-        private readonly IList<GenerateArgument> _generateArguments;
+        private readonly GenerateArgument _generateArgument;
         private static readonly Dictionary<string, ICodeGenerator> CodeGenerators;
 
         static ProgressWindow()
@@ -30,19 +30,22 @@ namespace CodeGenerator.Form
             }
         }
 
-        public ProgressWindow(IList<TableInfo> tableInfos, IList<GenerateArgument> generateArguments)
+        public ProgressWindow(IList<TableInfo> tableInfos, GenerateArgument generateArgument)
         {
             _tableInfos = tableInfos;
-            _generateArguments = generateArguments;
+            _generateArgument = generateArgument;
             InitializeComponent();
         }
 
         private void ExecuteGenerate()
         {
             var num = 0;
+
+            if (!string.IsNullOrEmpty(_generateArgument.ContextName))
+                new ContextGenerateCode().Generate(_tableInfos, _generateArgument);
             foreach (var info in _tableInfos)
             {
-                foreach (var argument in _generateArguments)
+                foreach (var argument in _generateArgument.ArgumentInfos)
                 {
                     try
                     {
@@ -51,7 +54,7 @@ namespace CodeGenerator.Form
                             case GenerateType.Entity:
                                 new EntityGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
                                 break;
-                            case GenerateType.WebModel:
+                            case GenerateType.Map:
                                 new MapGenerateCode().Generate(info, argument.ClassNamespace, argument.FileSavePath);
                                 break;
                             case GenerateType.Repository:

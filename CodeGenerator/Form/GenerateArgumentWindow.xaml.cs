@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CodeGenerator.Generate;
 using CodeGenerator.Pdm;
+using Newtonsoft.Json;
 
 namespace CodeGenerator.Form
 {
@@ -18,7 +20,7 @@ namespace CodeGenerator.Form
         #region 常量、属性
 
         private const string GenerateArgumentConfigPath = "GenerateArgument.ini";
-        public List<GenerateArgument> GenerateArguments { get; set; }
+        public GenerateArgument GenerateArgument { get; set; }
 
         #endregion
 
@@ -28,7 +30,7 @@ namespace CodeGenerator.Form
         {
             InitializeComponent();
 
-            GenerateArguments = new List<GenerateArgument>();
+            GenerateArgument = new GenerateArgument { ArgumentInfos = new List<ArgumentInfo>() };
             ReadGenerateArgumentFile();
         }
 
@@ -47,7 +49,7 @@ namespace CodeGenerator.Form
                     SelectFileSavePath(TxtEntityFilePath);
                     break;
                 case "BtnWebModelFilePath":
-                    SelectFileSavePath(TxtWebModelFilePath);
+                    SelectFileSavePath(TxtMapFilePath);
                     break;
                     //case "BtnRepositoryFilePath":
                     //    SelectFileSavePath(TxtRepositoryFilePath);
@@ -77,9 +79,28 @@ namespace CodeGenerator.Form
 
         private void BtnSave_OnClick(object sender, RoutedEventArgs e)
         {
+            if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
+            {
+                if (string.IsNullOrEmpty(TxtContextName.Text))
+                {
+                    MessageBox.Show(this, "如果要生成上下文，请输入上下文名称", "提示");
+                    TxtContextName.Focus();
+
+                    return;
+                }
+                GenerateArgument.ContextName = TxtContextName.Text;
+            }
+
             if (!GetGenerateArgument(CbEntity, TxtEntityNamespace, TxtEntityFilePath, BtnEntityFilePath, GenerateType.Entity)) return;
 
-            if (!GetGenerateArgument(CbWebModel, TxtWebModelNamespace, TxtWebModelFilePath, BtnWebModelFilePath, GenerateType.WebModel)) return;
+            if (!GetGenerateArgument(CbWebModel, TxtMapNamespace, TxtMapFilePath, BtnMapFilePath, GenerateType.Map)) return;
+
+            var entityInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Entity);
+            var mapInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Map);
+
+            GenerateArgument.ContextFileSavePath = entityInfo.FileSavePath;
+            GenerateArgument.ContextNamespace = entityInfo.ClassNamespace;
+            GenerateArgument.MapNamespace = mapInfo.ClassNamespace;
 
             //if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
 
@@ -109,7 +130,7 @@ namespace CodeGenerator.Form
                 return false;
             }
 
-            GenerateArguments.Add(new GenerateArgument
+            GenerateArgument.ArgumentInfos.Add(new ArgumentInfo
             {
                 GenerateType = generateType,
                 ClassNamespace = namespaceTextBox.Text,
@@ -137,10 +158,7 @@ namespace CodeGenerator.Form
             using (var fs = new FileStream(GenerateArgumentConfigPath, FileMode.Create))
             using (var sw = new StreamWriter(fs))
             {
-                foreach (var argument in GenerateArguments)
-                {
-                    sw.WriteLine("{0},{1},{2}", argument.GenerateType, argument.ClassNamespace, argument.FileSavePath);
-                }
+                sw.WriteLine(JsonConvert.SerializeObject(GenerateArgument));
                 sw.Flush();
             }
         }
@@ -149,33 +167,37 @@ namespace CodeGenerator.Form
         {
             try
             {
+                string argument;
+
                 using (var sr = new StreamReader(GenerateArgumentConfigPath, Encoding.Default))
                 {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        var arr = line.Split(',');
-                        if (arr.Length != 3) continue;
+                    argument = sr.ReadToEnd();
+                }
 
-                        GenerateType type;
-                        if (Enum.TryParse(arr[0], out type))
-                        {
-                            switch (type)
-                            {
-                                case GenerateType.Entity:
-                                    SetValueFromConfig(CbEntity, TxtEntityNamespace, TxtEntityFilePath, arr);
-                                    break;
-                                case GenerateType.WebModel:
-                                    SetValueFromConfig(CbWebModel, TxtWebModelNamespace, TxtWebModelFilePath, arr);
-                                    break;
-                                    //case GenerateType.Repository:
-                                    //    SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, arr);
-                                    //    break;
-                                    //case GenerateType.Bl:
-                                    //    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, arr);
-                                    //    break;
-                            }
-                        }
+                if (string.IsNullOrEmpty(argument)) return;
+
+                var generateArgument = JsonConvert.DeserializeObject<GenerateArgument>(argument);
+                if (!string.IsNullOrEmpty(generateArgument.ContextName))
+                {
+                    CbContext.IsChecked = true;
+                    TxtContextName.Text = generateArgument.ContextName;
+                }
+                foreach (var info in generateArgument.ArgumentInfos)
+                {
+                    switch (info.GenerateType)
+                    {
+                        case GenerateType.Entity:
+                            SetValueFromConfig(CbEntity, TxtEntityNamespace, TxtEntityFilePath, info);
+                            break;
+                        case GenerateType.Map:
+                            SetValueFromConfig(CbWebModel, TxtMapNamespace, TxtMapFilePath, info);
+                            break;
+                            //case GenerateType.Repository:
+                            //    SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, arr);
+                            //    break;
+                            //case GenerateType.Bl:
+                            //    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, arr);
+                            //    break;
                     }
                 }
             }
@@ -185,12 +207,12 @@ namespace CodeGenerator.Form
             }
         }
 
-        private void SetValueFromConfig(CheckBox checkBox, TextBox namespaceTextBox, TextBox filePathTextBox, string[] arguments)
+        private void SetValueFromConfig(CheckBox checkBox, TextBox namespaceTextBox, TextBox filePathTextBox, ArgumentInfo argumentInfo)
         {
             checkBox.IsChecked = true;
-            namespaceTextBox.Text = arguments[1];
+            namespaceTextBox.Text = argumentInfo.ClassNamespace;
 
-            var filePath = arguments[2];
+            var filePath = argumentInfo.FileSavePath;
             try
             {
                 if (!Directory.Exists(filePath))

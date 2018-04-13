@@ -1,6 +1,8 @@
-﻿namespace CodeGenerator.Generate
+﻿using System.Collections.Generic;
+
+namespace CodeGenerator.Generate
 {
-    public class GenerateArgument
+    public class ArgumentInfo
     {
         /// <summary>
         /// 生成类型
@@ -21,8 +23,36 @@
     public enum GenerateType
     {
         Entity,
-        WebModel,
+        Map,
         Repository,
         Bl
+    }
+
+    public class GenerateArgument
+    {
+        /// <summary>
+        /// 上下文名称
+        /// </summary>
+        public string ContextName { get; set; }
+
+        /// <summary>
+        /// 上下文命名空间
+        /// </summary>
+        public string ContextNamespace { get; set; }
+
+        /// <summary>
+        /// 上下文命名空间
+        /// </summary>
+        public string MapNamespace { get; set; }
+
+        /// <summary>
+        /// 上下文存放路径
+        /// </summary>
+        public string ContextFileSavePath { get; set; }
+
+        /// <summary>
+        /// 参数集合
+        /// </summary>
+        public List<ArgumentInfo> ArgumentInfos { get; set; }
     }
 }

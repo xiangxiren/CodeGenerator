@@ -97,8 +97,7 @@ namespace CodeGenerator.Form
 
         private void TwLeaf_OnSelected(object sender, RoutedEventArgs e)
         {
-            var item = e.OriginalSource as TreeViewItem;
-            if (item != null)
+            if (e.OriginalSource is TreeViewItem item)
             {
                 item.IsExpanded = true;
 
@@ -168,7 +167,7 @@ namespace CodeGenerator.Form
 
             var tables = new GenerateOperate(treeModel, XmlNodeOperate.Context.TableInfos).GetGenerateTables();
 
-            var progressWindow = new ProgressWindow(tables, window.GenerateArguments) { Owner = this };
+            var progressWindow = new ProgressWindow(tables, window.GenerateArgument) { Owner = this };
             progressWindow.ShowDialog();
         }
 

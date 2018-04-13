@@ -28,19 +28,26 @@
         </Grid.ColumnDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
-            <TextBlock Text="Entiy" Style="{StaticResource LabStyle}" />
+            <TextBlock Text="Context" Style="{StaticResource LabStyle}" />
         </DockPanel>
         <DockPanel Grid.Row="1" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
+            <TextBlock Text="Entiy" Style="{StaticResource LabStyle}" />
+        </DockPanel>
+        <DockPanel Grid.Row="2" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
             <TextBlock Text="Map" Style="{StaticResource LabStyle}" />
         </DockPanel>
         <!--<DockPanel Grid.Row="2" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
             <TextBlock Text="Repository" Style="{StaticResource LabStyle}" />
-        </DockPanel>
-        <DockPanel Grid.Row="3" Grid.Column="0" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top" Width="100">
-            <TextBlock Text="BL" Style="{StaticResource LabStyle}" />
         </DockPanel>-->
 
         <DockPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
+            <CheckBox Name="CbContext" Style="{StaticResource CbStyle}">生成</CheckBox>
+
+            <TextBlock Text="上 下  文:" Style="{StaticResource LabStyle}" Margin="10 0 0 0"/>
+            <TextBox Name="TxtContextName" Style="{StaticResource TxtStyle}"/>
+
+        </DockPanel>
+        <DockPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
             <CheckBox Name="CbEntity" Style="{StaticResource CbStyle}">生成</CheckBox>
 
             <TextBlock Text="命名空间:" Style="{StaticResource LabStyle}" Margin="10 0 0 0"/>
@@ -51,29 +58,18 @@
 
             <Button Name="BtnEntityFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
-        <DockPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
+        <DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
             <CheckBox Name="CbWebModel" Style="{StaticResource CbStyle}">生成</CheckBox>
 
             <TextBlock Text="命名空间:" Style="{StaticResource LabStyle}" Margin="10 0 0 0"/>
-            <TextBox Name="TxtWebModelNamespace" Style="{StaticResource TxtStyle}"/>
+            <TextBox Name="TxtMapNamespace" Style="{StaticResource TxtStyle}"/>
 
             <TextBlock Text="保存目录:" Style="{StaticResource LabStyle}" Margin="5 0 0 0"/>
-            <TextBox Name="TxtWebModelFilePath" Style="{StaticResource TxtStyle}" />
+            <TextBox Name="TxtMapFilePath" Style="{StaticResource TxtStyle}" />
 
-            <Button Name="BtnWebModelFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
+            <Button Name="BtnMapFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
         </DockPanel>
-        <!--<DockPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
-            <CheckBox Name="CbRepository" Style="{StaticResource CbStyle}">生成</CheckBox>
-
-            <TextBlock Text="命名空间:" Style="{StaticResource LabStyle}" Margin="10 0 0 0"/>
-            <TextBox Name="TxtRepositoryNamespace" Style="{StaticResource TxtStyle}"/>
-
-            <TextBlock Text="保存目录:" Style="{StaticResource LabStyle}" Margin="5 0 0 0"/>
-            <TextBox Name="TxtRepositoryFilePath" Style="{StaticResource TxtStyle}" />
-
-            <Button Name="BtnRepositoryFilePath" Style="{StaticResource BtnStyle}" Click="BtnFilePathSelect_OnClick">...</Button>
-        </DockPanel>
-        <DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
+        <!--<DockPanel Grid.Row="3" Grid.Column="1" HorizontalAlignment="Left" Height="46" LastChildFill="False" Margin="10,10,0,0" VerticalAlignment="Top">
             <CheckBox Name="CbBl" Style="{StaticResource CbStyle}">生成</CheckBox>
 
             <TextBlock Text="命名空间:" Style="{StaticResource LabStyle}" Margin="10 0 0 0"/>
