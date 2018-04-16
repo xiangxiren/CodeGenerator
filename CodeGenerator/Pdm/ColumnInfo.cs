@@ -25,13 +25,15 @@ namespace CodeGenerator.Pdm
 
         public string GetColumnType()
         {
-            if (DataType.ToUpper().Contains("CHAR")) return "string";
-            if (DataType.ToUpper().Contains("VARCHAR")) return "string";
-            if (DataType.ToUpper().Contains("NUMBER")) return "decimal";
-            if (DataType.ToUpper().Contains("NUMERIC")) return "decimal";
-            if (DataType.ToUpper().Contains("DECIMAL")) return "decimal";
+            var dataType = DataType.ToUpper();
 
-            switch (DataType.ToUpper())
+            if (dataType.Contains("CHAR")) return "string";
+            if (dataType.Contains("VARCHAR")) return "string";
+            if (dataType.Contains("NUMBER")) dataType = "DECIMAL";
+            else if (dataType.Contains("NUMERIC")) dataType = "DECIMAL";
+            else if (dataType.Contains("DECIMAL")) dataType = "DECIMAL";
+
+            switch (dataType)
             {
                 case "INT":
                 case "INTEGER":
@@ -51,6 +53,8 @@ namespace CodeGenerator.Pdm
                     return Mandatory ? "Guid" : "Guid?";
                 case "TINYINT":
                     return Mandatory ? "byte" : "byte?";
+                case "DECIMAL":
+                    return Mandatory ? "decimal" : "decimal?";
             }
 
             throw new Exception($"数据库列{Code}类型{DataType}无法转换为System基础类型");
