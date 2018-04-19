@@ -126,12 +126,12 @@ namespace CodeGenerator.Pdm
                     if (property.GetCustomAttributes(typeof(NodeAttributeAttribute), false)
                         .FirstOrDefault() is NodeAttributeAttribute nodeAttribute)
                     {
-                        var attributeName = string.IsNullOrEmpty(nodeAttribute.AttributeName)
+                        var attributeName = string.IsNullOrEmpty(nodeAttribute.AttributeName) || string.IsNullOrEmpty(nodeAttribute.AttributeName.Trim())
                             ? property.Name
-                            : nodeAttribute.AttributeName;
+                            : nodeAttribute.AttributeName.Trim();
 
                         var element = (XmlElement)node;
-                        property.SetValue(info, element.GetAttribute(attributeName));
+                        property.SetValue(info, element.GetAttribute(attributeName).Trim());
                     }
                     else
                     {
@@ -146,7 +146,7 @@ namespace CodeGenerator.Pdm
                         if (childNode == null) continue;
 
                         var innerText = childNode.InnerText;
-                        if (!string.IsNullOrEmpty(innerText)) innerText = innerText.Replace("\r\n", "");
+                        if (!string.IsNullOrEmpty(innerText)) innerText = innerText.Trim().Replace("\r\n", "");
 
                         switch (property.PropertyType.FullName)
                         {
