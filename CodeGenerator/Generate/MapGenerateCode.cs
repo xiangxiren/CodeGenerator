@@ -82,10 +82,10 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("            // Table & Column Mappings");
                 sw.WriteLine("            ToTable(\"{0}\");", table.TableName);
 
-                foreach (var column in table.ColumnInfos)
-                {
-                    sw.WriteLine("            Property(t => t.{0}).HasColumnName(\"{0}\");", column.Code);
-                }
+                //                foreach (var column in table.ColumnInfos)
+                //                {
+                //                    sw.WriteLine("            Property(t => t.{0}).HasColumnName(\"{0}\");", column.Code);
+                //                }
 
                 if (table.ReferenceTableInfos.Count > 0)
                 {
