@@ -91,16 +91,45 @@ namespace CodeGenerator.Form
                 GenerateArgument.ContextName = TxtContextName.Text;
             }
 
-            if (!GetGenerateArgument(CbEntity, TxtEntityNamespace, TxtEntityFilePath, BtnEntityFilePath, GenerateType.Entity)) return;
+            if (GetGenerateArgument(CbEntity, TxtEntityNamespace, TxtEntityFilePath, BtnEntityFilePath, GenerateType.Entity))
+            {
+                var entityInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Entity);
+                GenerateArgument.ContextFileSavePath = entityInfo.FileSavePath;
+                GenerateArgument.ContextNamespace = entityInfo.ClassNamespace;
+            }
+            else
+            {
+                if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
+                {
+                    if (string.IsNullOrEmpty(TxtContextName.Text))
+                    {
+                        MessageBox.Show(this, "如果要生成上下文，必须选择生成实体和Map", "提示");
+                        TxtContextName.Focus();
 
-            if (!GetGenerateArgument(CbWebModel, TxtMapNamespace, TxtMapFilePath, BtnMapFilePath, GenerateType.Map)) return;
+                        return;
+                    }
+                }
+            }
 
-            var entityInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Entity);
-            var mapInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Map);
 
-            GenerateArgument.ContextFileSavePath = entityInfo.FileSavePath;
-            GenerateArgument.ContextNamespace = entityInfo.ClassNamespace;
-            GenerateArgument.MapNamespace = mapInfo.ClassNamespace;
+            if (GetGenerateArgument(CbWebModel, TxtMapNamespace, TxtMapFilePath, BtnMapFilePath, GenerateType.Map))
+            {
+                var mapInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Map);
+                GenerateArgument.MapNamespace = mapInfo.ClassNamespace;
+            }
+            else
+            {
+                if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
+                {
+                    if (string.IsNullOrEmpty(TxtContextName.Text))
+                    {
+                        MessageBox.Show(this, "如果要生成上下文，必须选择生成实体和Map", "提示");
+                        TxtContextName.Focus();
+
+                        return;
+                    }
+                }
+            }
 
             //if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
 
@@ -113,7 +142,7 @@ namespace CodeGenerator.Form
 
         private bool GetGenerateArgument(CheckBox checkBox, TextBox namespaceTextBox, TextBox filePathTextBox, Button filePathButton, GenerateType generateType)
         {
-            if (!checkBox.IsChecked.HasValue || !checkBox.IsChecked.Value) return true;
+            if (!checkBox.IsChecked.HasValue || !checkBox.IsChecked.Value) return false;
 
             if (string.IsNullOrEmpty(namespaceTextBox.Text))
             {

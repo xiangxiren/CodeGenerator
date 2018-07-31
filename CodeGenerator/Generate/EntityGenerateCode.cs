@@ -15,7 +15,8 @@ namespace CodeGenerator.Generate
                 #region using
 
                 sw.WriteLine("using System;");
-                sw.WriteLine("using System.Collections.Generic;");
+                sw.WriteLine("using System.ComponentModel.DataAnnotations;");
+                sw.WriteLine("using System.ComponentModel.DataAnnotations.Schema;");
                 sw.WriteLine();
 
                 #endregion
@@ -26,6 +27,7 @@ namespace CodeGenerator.Generate
                 sw.WriteLine("    /// {0}", table.Comment);
                 sw.WriteLine("    /// </summary>");
 
+                sw.WriteLine("    [Table(\"{0}\")]", table.TableName);
                 sw.WriteLine("    public class {0}", table.TableName);
                 sw.WriteLine("    {");
 
@@ -61,6 +63,17 @@ namespace CodeGenerator.Generate
                     sw.WriteLine("        /// <summary>");
                     sw.WriteLine("        /// {0}", string.IsNullOrEmpty(columnInfo.Comment) && columnInfo.Code == table.PrimaryKeyCode ? "主键" : columnInfo.Comment);
                     sw.WriteLine("        /// </summary>");
+                    if (columnInfo.Code == table.PrimaryKeyCode)
+                        sw.WriteLine("        [Key]");
+
+                    if (columnInfo.GetColumnType() == "string")
+                    {
+                        if (columnInfo.Mandatory)
+                            sw.WriteLine("        [Required]");
+
+                        sw.WriteLine("        [StringLength({0})]", columnInfo.Length);
+                    }
+
                     sw.WriteLine("        public {0} {1} {2} get; set; {3}", columnInfo.GetColumnType(), columnInfo.Code, "{", "}");
 
                     if (!flag)
