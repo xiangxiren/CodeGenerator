@@ -45,6 +45,7 @@ namespace CodeGenerator.Pdm
                 case "DATETIME":
                 case "DATE":
                     return Mandatory ? "DateTime" : "DateTime?";
+                case "BOOL":
                 case "BIT":
                     return Mandatory ? "bool" : "bool?";
                 case "TEXT":
