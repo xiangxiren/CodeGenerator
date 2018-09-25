@@ -69,7 +69,7 @@ namespace CodeGenerator.Generate
 							}
 							continue;
 						}
-						if (info.DataType.ToUpper().Contains("NUMERIC"))
+						if (info.DataType.ToUpper().Contains("NUMERIC")|| info.DataType.ToUpper().Contains("DECIMAL"))
 						{
 							sw.WriteLine(
 								"			builder.Property(t => t.{0}){3}.HasColumnType(\"decimal({1}, {2})\");",
