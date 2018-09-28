@@ -48,12 +48,12 @@ namespace CodeGenerator.Form
 				case "BtnEntityFilePath":
 					SelectFileSavePath(TxtEntityFilePath);
 					break;
-				case "BtnWebModelFilePath":
-					SelectFileSavePath(TxtMapFilePath);
+				case "BtnConfigFilePath":
+					SelectFileSavePath(TxtConfigFilePath);
 					break;
-					//case "BtnRepositoryFilePath":
-					//    SelectFileSavePath(TxtRepositoryFilePath);
-					//    break;
+				case "BtnRepositoryFilePath":
+					SelectFileSavePath(TxtRepositoryFilePath);
+					break;
 					//case "BtnBlFilePath":
 					//    SelectFileSavePath(TxtBlFilePath);
 					//    break;
@@ -79,18 +79,6 @@ namespace CodeGenerator.Form
 
 		private void BtnSave_OnClick(object sender, RoutedEventArgs e)
 		{
-			if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
-			{
-				if (string.IsNullOrEmpty(TxtContextName.Text))
-				{
-					MessageBox.Show(this, "如果要生成上下文，请输入上下文名称", "提示");
-					TxtContextName.Focus();
-
-					return;
-				}
-				GenerateArgument.ContextName = TxtContextName.Text;
-			}
-
 			if (GetGenerateArgument(CbEntity, TxtEntityNamespace, TxtEntityFilePath, BtnEntityFilePath, GenerateType.Entity))
 			{
 				var entityInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Entity);
@@ -100,39 +88,20 @@ namespace CodeGenerator.Form
 			}
 			else
 			{
-				if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
-				{
-					if (string.IsNullOrEmpty(TxtContextName.Text))
-					{
-						MessageBox.Show(this, "如果要生成上下文，必须选择生成实体和Map", "提示");
-						TxtContextName.Focus();
-
-						return;
-					}
-				}
+				return;
 			}
 
-
-			if (GetGenerateArgument(CbWebModel, TxtMapNamespace, TxtMapFilePath, BtnMapFilePath, GenerateType.Map))
+			if (GetGenerateArgument(CbConfig, TxtConfigNamespace, TxtConfigFilePath, BtnConfigFilePath, GenerateType.Config))
 			{
-				var mapInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Map);
-				GenerateArgument.MapNamespace = mapInfo.ClassNamespace;
+				var mapInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Config);
+				GenerateArgument.ConfigNamespace = mapInfo.ClassNamespace;
 			}
 			else
 			{
-				if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
-				{
-					if (string.IsNullOrEmpty(TxtContextName.Text))
-					{
-						MessageBox.Show(this, "如果要生成上下文，必须选择生成实体和Map", "提示");
-						TxtContextName.Focus();
-
-						return;
-					}
-				}
+				return;
 			}
 
-			//if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
+			if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
 
 			//if (!GetGenerateArgument(CbBl, TxtBlNamespace, TxtBlFilePath, BtnBlFilePath, GenerateType.Bl)) return;
 
@@ -207,11 +176,7 @@ namespace CodeGenerator.Form
 				if (string.IsNullOrEmpty(argument)) return;
 
 				var generateArgument = JsonConvert.DeserializeObject<GenerateArgument>(argument);
-				if (!string.IsNullOrEmpty(generateArgument.ContextName))
-				{
-					CbContext.IsChecked = true;
-					TxtContextName.Text = generateArgument.ContextName;
-				}
+				
 				foreach (var info in generateArgument.ArgumentInfos)
 				{
 					switch (info.GenerateType)
@@ -219,14 +184,14 @@ namespace CodeGenerator.Form
 						case GenerateType.Entity:
 							SetValueFromConfig(CbEntity, TxtEntityNamespace, TxtEntityFilePath, info);
 							break;
-						case GenerateType.Map:
-							SetValueFromConfig(CbWebModel, TxtMapNamespace, TxtMapFilePath, info);
+						case GenerateType.Config:
+							SetValueFromConfig(CbConfig, TxtConfigNamespace, TxtConfigFilePath, info);
 							break;
-							//case GenerateType.Repository:
-							//    SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, arr);
-							//    break;
+						case GenerateType.Repository:
+							SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, info);
+							break;
 							//case GenerateType.Bl:
-							//    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, arr);
+							//    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, info);
 							//    break;
 					}
 				}

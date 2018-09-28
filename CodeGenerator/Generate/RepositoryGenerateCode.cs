@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
@@ -10,16 +11,12 @@ namespace CodeGenerator.Generate
 		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
 		{
 			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
-			using (var sw = new StreamWriter(fs))
+			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
 
-				sw.WriteLine("using System.Text;");
-				sw.WriteLine("using JG.Core;");
-				sw.WriteLine("using JG.Core.Repository;");
-				sw.WriteLine("using JG.Core.Cache;");
-				sw.WriteLine("using Scm.Component.Common;");
-				sw.WriteLine("using Scm.Component.SecurityModel;");
+				sw.WriteLine("using Hxf.USORST.Infrastructure.Data;");
+				sw.WriteLine("using {0};", argumentInfo.GenerateArgument.EntityNamespace);
 				sw.WriteLine();
 
 				#endregion
@@ -27,33 +24,13 @@ namespace CodeGenerator.Generate
 				sw.WriteLine("namespace {0}", argumentInfo.ClassNamespace);
 				sw.WriteLine("{");
 				sw.WriteLine("    /// <summary>");
-				sw.WriteLine("    /// {0}Repository接口", table.Comment);
+				sw.WriteLine("    /// {0}Repository", table.Comment);
 				sw.WriteLine("    /// </summary>");
-				sw.WriteLine("    public interface I{0}Repository : IRepository<{0}Entity>", table.TableName);
+				sw.WriteLine("    public class {0}Repository : ReadonlyRepository<{0}>", table.TableName);
 				sw.WriteLine("    {");
-				sw.WriteLine("        PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex);", table.TableName);
-				sw.WriteLine("    }");
-				sw.WriteLine();
-				sw.WriteLine("    /// <summary>");
-				sw.WriteLine("    /// {0}Repository实现", table.Comment);
-				sw.WriteLine("    /// </summary>");
-				sw.WriteLine("    public class {0}Repository : ExtRepository<{0}Entity>, I{0}Repository", table.TableName);
-				sw.WriteLine("    {");
-				sw.WriteLine("        public PageDataSet<{0}Entity> GetList(QueryModel queryModel, int pageSize, int pageIndex)", table.TableName);
+				sw.WriteLine("        public {0}Repository(IEntityframeworkReadonlyContext unitWork)", table.TableName);
+				sw.WriteLine("			: base(unitWork)");
 				sw.WriteLine("        {");
-				sw.WriteLine("            return this.GetPageEntities(pageSize, pageIndex, CachingExpirationType.ObjectCollection, () =>");
-				sw.WriteLine("            {");
-				sw.WriteLine("                return");
-				sw.WriteLine("                    new StringBuilder().Append(CacheHelper.GetListCacheKeyPrefix(CacheVersionType.AreaVersion,");
-				sw.WriteLine("                        \"ClientID\",");
-				sw.WriteLine("                        UserContext.CurrentUser.ClientID))");
-				sw.WriteLine("                        .Append(\"GetList\")");
-				sw.WriteLine("                        .Append(queryModel.GetConditionCacheKey()).ToString();");
-				sw.WriteLine("            },");
-				sw.WriteLine("                () =>");
-				sw.WriteLine("                {");
-				sw.WriteLine("                    return queryModel.GetConditionSql().Append(queryModel.GetOrderSql());");
-				sw.WriteLine("                });");
 				sw.WriteLine("        }");
 				sw.WriteLine("    }");
 				sw.Write("}");

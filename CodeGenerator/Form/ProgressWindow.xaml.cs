@@ -56,8 +56,8 @@ namespace CodeGenerator.Form
 							case GenerateType.Entity:
 								new EntityGenerateCode().Generate(info, argument);
 								break;
-							case GenerateType.Map:
-								new MapGenerateCode().Generate(info, argument);
+							case GenerateType.Config:
+								new ConfigGenerateCode().Generate(info, argument);
 								break;
 							case GenerateType.Repository:
 								new RepositoryGenerateCode().Generate(info, argument);

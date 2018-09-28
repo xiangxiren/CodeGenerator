@@ -25,7 +25,7 @@ namespace CodeGenerator.Generate
 	public enum GenerateType
 	{
 		Entity,
-		Map,
+		Config,
 		Repository,
 		Bl
 	}
@@ -50,7 +50,7 @@ namespace CodeGenerator.Generate
 		/// <summary>
 		/// 映射命名空间
 		/// </summary>
-		public string MapNamespace { get; set; }
+		public string ConfigNamespace { get; set; }
 
 		/// <summary>
 		/// 上下文存放路径

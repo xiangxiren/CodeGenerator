@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
@@ -10,14 +11,14 @@ namespace CodeGenerator.Generate
 		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
 		{
 			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
-			using (var sw = new StreamWriter(fs))
+			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
 
 				sw.WriteLine("using System;");
 				if (table.ChildTableInfos != null && table.ChildTableInfos.Count > 0)
 					sw.WriteLine("using System.Collections.Generic;");
-				//				sw.WriteLine("using System.ComponentModel.DataAnnotations;");
+				sw.WriteLine("using Hxf.USORST.Infrastructure;");
 				//				sw.WriteLine("using System.ComponentModel.DataAnnotations.Schema;");
 				sw.WriteLine();
 
@@ -30,7 +31,7 @@ namespace CodeGenerator.Generate
 				sw.WriteLine("    /// </summary>");
 
 				//                sw.WriteLine("    [Table(\"{0}\")]", table.TableName);
-				sw.WriteLine("    public class {0}", table.TableName);
+				sw.WriteLine("    public class {0} : IAggregateRoot", table.TableName);
 				sw.WriteLine("    {");
 
 				#region 构造函数

@@ -1,17 +1,18 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
 {
-	public class MapGenerateCode : GenerateCodeBase, IGenerateCode
+	public class ConfigGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileName => "Configuration.cs";
 
 		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
 		{
 			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
-			using (var sw = new StreamWriter(fs))
+			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
 
@@ -69,7 +70,7 @@ namespace CodeGenerator.Generate
 							}
 							continue;
 						}
-						if (info.DataType.ToUpper().Contains("NUMERIC")|| info.DataType.ToUpper().Contains("DECIMAL"))
+						if (info.DataType.ToUpper().Contains("NUMERIC") || info.DataType.ToUpper().Contains("DECIMAL"))
 						{
 							sw.WriteLine(
 								"			builder.Property(t => t.{0}){3}.HasColumnType(\"decimal({1}, {2})\");",

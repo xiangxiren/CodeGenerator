@@ -16,7 +16,7 @@ namespace CodeGenerator.Generate
                 #region using
 
                 sw.WriteLine("using System.Data.Entity;");
-                sw.WriteLine("using {0};", generateArgument.MapNamespace);
+                sw.WriteLine("using {0};", generateArgument.ConfigNamespace);
                 sw.WriteLine();
 
                 #endregion
@@ -61,7 +61,7 @@ namespace CodeGenerator.Generate
                 flag = false;
                 foreach (var table in tables)
                 {
-                    sw.WriteLine("            modelBuilder.Configurations.Add(new {0}Map());", table.TableName);
+                    sw.WriteLine("            modelBuilder.Configurations.Add(new {0}Config());", table.TableName);
                 }
 
                 sw.WriteLine("        }");
