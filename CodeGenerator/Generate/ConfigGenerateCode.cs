@@ -32,7 +32,7 @@ namespace CodeGenerator.Generate
 
 				sw.WriteLine("        public void Configure(EntityTypeBuilder<{0}> builder)", table.TableName);
 				sw.WriteLine("        {");
-				sw.WriteLine("            builder.ToTable(\"{0}\");", table.TableName);
+				sw.WriteLine("            builder.ToTable(\"{0}\", \"dbo\");", table.TableName);
 				sw.WriteLine("            builder.HasKey(t => t.{0});", table.PrimaryKeyCode);
 
 				var properties =
