@@ -79,13 +79,13 @@
                                             CanUserSort="False" />
 					<DataGridTextColumn Header="Comment" Width="*" Binding="{Binding Comment}" IsReadOnly="True"
                                             CanUserSort="False" />
-					<DataGridTextColumn Header="DataType" Width="200" Binding="{Binding DataType}" IsReadOnly="True" 
+					<DataGridTextColumn Header="DataType" Width="*" Binding="{Binding DataType}" IsReadOnly="True" 
                                             CanUserSort="False" />
-					<DataGridTextColumn Header="Length" Width="100" Binding="{Binding Length}" IsReadOnly="True"
+					<DataGridTextColumn Header="Length" Width="*" Binding="{Binding Length}" IsReadOnly="True"
                                             CanUserSort="False" />
-					<DataGridTextColumn Header="Precision" Width="100" Binding="{Binding Precision}" IsReadOnly="True"
+					<DataGridTextColumn Header="Precision" Width="*" Binding="{Binding Precision}" IsReadOnly="True"
                                             CanUserSort="False" />
-					<DataGridTemplateColumn Header="PrimaryKey" Width="100" CanUserSort="False">
+					<DataGridTemplateColumn Header="PrimaryKey" Width="*" CanUserSort="False">
 						<DataGridTemplateColumn.CellTemplate>
 							<DataTemplate>
 								<CheckBox IsChecked="{Binding PrimaryKey}" IsEnabled="False" HorizontalAlignment="Center"></CheckBox>
