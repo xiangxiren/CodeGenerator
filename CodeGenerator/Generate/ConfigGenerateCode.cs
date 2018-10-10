@@ -27,7 +27,7 @@ namespace CodeGenerator.Generate
 				sw.WriteLine("namespace {0}", argumentInfo.ClassNamespace);
 				sw.WriteLine("{");
 
-				sw.WriteLine("    public class {0}Configuration : IEntityTypeConfiguration<{0}>", table.TableName);
+				sw.WriteLine("    internal class {0}Configuration : IEntityTypeConfiguration<{0}>", table.TableName);
 				sw.WriteLine("    {");
 
 				sw.WriteLine("        public void Configure(EntityTypeBuilder<{0}> builder)", table.TableName);
