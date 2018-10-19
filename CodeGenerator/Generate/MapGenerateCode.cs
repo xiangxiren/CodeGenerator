@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
@@ -11,7 +12,7 @@ namespace CodeGenerator.Generate
 		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
 		{
 			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
-			using (var sw = new StreamWriter(fs))
+			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
 
@@ -26,9 +27,11 @@ namespace CodeGenerator.Generate
 				sw.WriteLine("namespace {0}", argumentInfo.ClassNamespace);
 				sw.WriteLine("{");
 
-				sw.WriteLine("    public class {0}Configuration : IEntityTypeConfiguration<{0}>", table.TableName);
+				sw.WriteLine("    /// <inheritdoc />");
+				sw.WriteLine("    internal class {0}Configuration : IEntityTypeConfiguration<{0}>", table.TableName);
 				sw.WriteLine("    {");
 
+				sw.WriteLine("        /// <inheritdoc />");
 				sw.WriteLine("        public void Configure(EntityTypeBuilder<{0}> builder)", table.TableName);
 				sw.WriteLine("        {");
 				sw.WriteLine("            builder.ToTable(\"{0}\");", table.TableName);
@@ -69,7 +72,7 @@ namespace CodeGenerator.Generate
 							}
 							continue;
 						}
-						if (info.DataType.ToUpper().Contains("NUMERIC")|| info.DataType.ToUpper().Contains("DECIMAL"))
+						if (info.DataType.ToUpper().Contains("NUMERIC") || info.DataType.ToUpper().Contains("DECIMAL"))
 						{
 							sw.WriteLine(
 								"			builder.Property(t => t.{0}){3}.HasColumnType(\"decimal({1}, {2})\");",

@@ -56,6 +56,8 @@ namespace CodeGenerator.Pdm
                     return Mandatory ? "byte" : "byte?";
                 case "DECIMAL":
                     return Mandatory ? "decimal" : "decimal?";
+                case "DOUBLE":
+                    return Mandatory ? "double" : "double?";
             }
 
             throw new Exception($"数据库列{Code}类型{DataType}无法转换为System基础类型");

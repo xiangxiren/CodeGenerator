@@ -48,7 +48,7 @@ namespace CodeGenerator.Form
 				case "BtnEntityFilePath":
 					SelectFileSavePath(TxtEntityFilePath);
 					break;
-				case "BtnWebModelFilePath":
+				case "BtnMapFilePath":
 					SelectFileSavePath(TxtMapFilePath);
 					break;
 					//case "BtnRepositoryFilePath":

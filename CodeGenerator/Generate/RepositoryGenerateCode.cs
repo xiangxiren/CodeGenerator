@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate
@@ -10,7 +11,7 @@ namespace CodeGenerator.Generate
 		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
 		{
 			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
-			using (var sw = new StreamWriter(fs))
+			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
 
