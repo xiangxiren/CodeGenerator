@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CodeGenerator.Generate;
+using CodeGenerator.Generate.Code;
+using CodeGenerator.Generate.DynamicGenerate;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Form
@@ -41,31 +45,17 @@ namespace CodeGenerator.Form
 		{
 			var num = 0;
 
-			if (!string.IsNullOrEmpty(_generateArgument.ContextName))
-				new ContextGenerateCode().Generate(_tableInfos, _generateArgument);
 			foreach (var info in _tableInfos)
 			{
 				foreach (var argument in _generateArgument.ArgumentInfos)
 				{
 					try
 					{
-						argument.GenerateArgument = _generateArgument;
+						var generateCode = GetGenerateCode(argument.GenerateType);
 
-						switch (argument.GenerateType)
-						{
-							case GenerateType.Entity:
-								new EntityGenerateCode().Generate(info, argument);
-								break;
-							case GenerateType.Map:
-								new MapGenerateCode().Generate(info, argument);
-								break;
-							case GenerateType.Repository:
-								new RepositoryGenerateCode().Generate(info, argument);
-								break;
-							case GenerateType.Bl:
-								new BlGenerateCode().Generate(info, argument);
-								break;
-						}
+						if (generateCode == null) continue;
+
+						generateCode.Generate(info, argument);
 
 						//                        foreach (var generator in CodeGenerators)
 						//                        {
@@ -97,6 +87,23 @@ namespace CodeGenerator.Form
 			GenerateProgress.Maximum = _tableInfos.Count;
 
 			Task.Factory.StartNew(ExecuteGenerate);
+		}
+
+		private IGenerateCode GetGenerateCode(GenerateType generateType)
+		{
+			var types = GetType().Assembly.GetTypes()
+				.Where(t => typeof(IGenerateCode).IsAssignableFrom(t) && !t.IsAbstract);
+
+			var generateCodeType =
+				(from type in types
+				 let attr = type.GetCustomAttribute<CodeGeneratorAttribute>()
+				 where attr != null && attr.GenerateType == generateType
+				 select type)
+				.FirstOrDefault();
+
+			if (generateCodeType == null) return null;
+
+			return (IGenerateCode)Activator.CreateInstance(generateCodeType);
 		}
 	}
 }

@@ -2,8 +2,9 @@
 using System.Text;
 using CodeGenerator.Pdm;
 
-namespace CodeGenerator.Generate
+namespace CodeGenerator.Generate.Code
 {
+	[CodeGenerator(GenerateType.Repository)]
 	public class RepositoryGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileName => "Repository.cs";

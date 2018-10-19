@@ -2,7 +2,7 @@
 using System.Text;
 using CodeGenerator.Pdm;
 
-namespace CodeGenerator.Generate
+namespace CodeGenerator.Generate.Code
 {
 	public class BlGenerateCode : GenerateCodeBase, IGenerateCode
 	{

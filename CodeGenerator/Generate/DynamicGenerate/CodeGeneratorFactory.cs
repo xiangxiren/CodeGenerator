@@ -6,7 +6,7 @@ using System.Text;
 using CodeGenerator.Generate.GenerateModel;
 using Codeplex.Data;
 
-namespace CodeGenerator.Generate
+namespace CodeGenerator.Generate.DynamicGenerate
 {
     public sealed class CodeGeneratorFactory
     {

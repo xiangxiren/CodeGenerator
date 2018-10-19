@@ -24,39 +24,44 @@ namespace CodeGenerator.Generate
 
 	public enum GenerateType
 	{
+		/// <summary>
+		/// 实体
+		/// </summary>
 		Entity,
-		Map,
+
+		/// <summary>
+		/// 映射配置
+		/// </summary>
+		Config,
+
+		/// <summary>
+		/// 仓储
+		/// </summary>
 		Repository,
-		Bl
+
+		/// <summary>
+		/// 服务
+		/// </summary>
+		Service,
+
+		/// <summary>
+		/// Dto
+		/// </summary>
+		Dto,
+
+		/// <summary>
+		/// 控制器
+		/// </summary>
+		Controller,
+
+		/// <summary>
+		/// 视图
+		/// </summary>
+		View
 	}
 
 	public class GenerateArgument
 	{
-		/// <summary>
-		/// 上下文名称
-		/// </summary>
-		public string ContextName { get; set; }
-
-		/// <summary>
-		/// 上下文命名空间
-		/// </summary>
-		public string ContextNamespace { get; set; }
-
-		/// <summary>
-		/// 实体命名空间
-		/// </summary>
-		public string EntityNamespace { get; set; }
-
-		/// <summary>
-		/// 映射命名空间
-		/// </summary>
-		public string MapNamespace { get; set; }
-
-		/// <summary>
-		/// 上下文存放路径
-		/// </summary>
-		public string ContextFileSavePath { get; set; }
-
 		/// <summary>
 		/// 参数集合
 		/// </summary>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +16,7 @@ namespace CodeGenerator.Form
 	/// <summary>
 	///     EahouseListWindow.xaml 的交互逻辑
 	/// </summary>
-	public partial class GenerateArgumentWindow
+	public partial class ArgumentWindow
 	{
 		#region 常量、属性
 
@@ -26,7 +27,7 @@ namespace CodeGenerator.Form
 
 		#region 构造函数
 
-		public GenerateArgumentWindow()
+		public ArgumentWindow()
 		{
 			InitializeComponent();
 
@@ -43,21 +44,9 @@ namespace CodeGenerator.Form
 			var button = (Button)e.OriginalSource;
 			if (button == null) return;
 
-			switch (button.Name)
-			{
-				case "BtnEntityFilePath":
-					SelectFileSavePath(TxtEntityFilePath);
-					break;
-				case "BtnMapFilePath":
-					SelectFileSavePath(TxtMapFilePath);
-					break;
-					//case "BtnRepositoryFilePath":
-					//    SelectFileSavePath(TxtRepositoryFilePath);
-					//    break;
-					//case "BtnBlFilePath":
-					//    SelectFileSavePath(TxtBlFilePath);
-					//    break;
-			}
+			var textBox = GeTextBox(button);
+
+			SelectFileSavePath(textBox);
 		}
 
 		private void SelectFileSavePath(TextBox filePathTextBox)
@@ -79,71 +68,50 @@ namespace CodeGenerator.Form
 
 		private void BtnSave_OnClick(object sender, RoutedEventArgs e)
 		{
-			if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
-			{
-				if (string.IsNullOrEmpty(TxtContextName.Text))
-				{
-					MessageBox.Show(this, "如果要生成上下文，请输入上下文名称", "提示");
-					TxtContextName.Focus();
+			var fieldInfos = GetFieldInfos();
 
-					return;
-				}
-				GenerateArgument.ContextName = TxtContextName.Text;
+			bool flag = false;
+
+			foreach (GenerateType type in Enum.GetValues(typeof(GenerateType)))
+			{
+				var checkboxValue = GetCheckBox(fieldInfos, type);
+				if (checkboxValue == null) continue;
+
+				var txtNamespaceValue = GetNamespaceTextBox(fieldInfos, type);
+				if (txtNamespaceValue == null) continue;
+
+				var txtFilePathValue = GetFilePathTextBox(fieldInfos, type);
+				if (txtFilePathValue == null) continue;
+
+				var btnFilePathValue = GetFilePathButton(fieldInfos, type);
+				if (btnFilePathValue == null) continue;
+
+				if (GetGenerateArgument(checkboxValue, txtNamespaceValue, txtFilePathValue, BtnEntityFilePath,
+					type)) continue;
+
+				flag = true;
+				break;
 			}
 
-			if (GetGenerateArgument(CbEntity, TxtEntityNamespace, TxtEntityFilePath, BtnEntityFilePath, GenerateType.Entity))
-			{
-				var entityInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Entity);
-				GenerateArgument.ContextFileSavePath = entityInfo.FileSavePath;
-				GenerateArgument.ContextNamespace = entityInfo.ClassNamespace;
-				GenerateArgument.EntityNamespace = entityInfo.ClassNamespace;
-			}
-			else
-			{
-				if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
-				{
-					if (string.IsNullOrEmpty(TxtContextName.Text))
-					{
-						MessageBox.Show(this, "如果要生成上下文，必须选择生成实体和Map", "提示");
-						TxtContextName.Focus();
-
-						return;
-					}
-				}
-			}
-
-
-			if (GetGenerateArgument(CbWebModel, TxtMapNamespace, TxtMapFilePath, BtnMapFilePath, GenerateType.Map))
-			{
-				var mapInfo = GenerateArgument.ArgumentInfos.First(t => t.GenerateType == GenerateType.Map);
-				GenerateArgument.MapNamespace = mapInfo.ClassNamespace;
-			}
-			else
-			{
-				if (CbContext.IsChecked.HasValue && CbContext.IsChecked.Value)
-				{
-					if (string.IsNullOrEmpty(TxtContextName.Text))
-					{
-						MessageBox.Show(this, "如果要生成上下文，必须选择生成实体和Map", "提示");
-						TxtContextName.Focus();
-
-						return;
-					}
-				}
-			}
-
-			//if (!GetGenerateArgument(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, BtnRepositoryFilePath, GenerateType.Repository)) return;
-
-			//if (!GetGenerateArgument(CbBl, TxtBlNamespace, TxtBlFilePath, BtnBlFilePath, GenerateType.Bl)) return;
+			if (flag) return;
 
 			WriteGenerateArgumentFile();
 			DialogResult = true;
 			Close();
 		}
 
+		private FieldInfo[] GetFieldInfos()
+		{
+			return GetType().GetFields(BindingFlags.Instance |
+															BindingFlags.Static |
+															BindingFlags.Public |
+															BindingFlags.NonPublic |
+															BindingFlags.DeclaredOnly);
+		}
+
 		private bool GetGenerateArgument(CheckBox checkBox, TextBox namespaceTextBox, TextBox filePathTextBox, Button filePathButton, GenerateType generateType)
 		{
-			if (!checkBox.IsChecked.HasValue || !checkBox.IsChecked.Value) return false;
+			if (!checkBox.IsChecked.HasValue || !checkBox.IsChecked.Value) return true;
 
 			if (string.IsNullOrEmpty(namespaceTextBox.Text))
 			{
@@ -179,6 +147,22 @@ namespace CodeGenerator.Form
 				BtnSave_OnClick(null, null);
 		}
 
+		private TextBox GeTextBox(Button button)
+		{
+			var name = button.Name.Replace("Btn", "");
+
+			var fieldInfo = GetType().GetFields(BindingFlags.Instance |
+											  BindingFlags.Static |
+											  BindingFlags.Public |
+											  BindingFlags.NonPublic |
+											  BindingFlags.DeclaredOnly)
+				.FirstOrDefault(t => t.Name == $"Txt{name}");
+
+			if (fieldInfo == null) return null;
+
+			return (TextBox)fieldInfo.GetValue(this);
+		}
+
 		#endregion
 
 		#region 文件读写
@@ -207,28 +191,21 @@ namespace CodeGenerator.Form
 				if (string.IsNullOrEmpty(argument)) return;
 
 				var generateArgument = JsonConvert.DeserializeObject<GenerateArgument>(argument);
-				if (!string.IsNullOrEmpty(generateArgument.ContextName))
-				{
-					CbContext.IsChecked = true;
-					TxtContextName.Text = generateArgument.ContextName;
-				}
+
+				var fieldInfos = GetFieldInfos();
+
 				foreach (var info in generateArgument.ArgumentInfos)
 				{
-					switch (info.GenerateType)
-					{
-						case GenerateType.Entity:
-							SetValueFromConfig(CbEntity, TxtEntityNamespace, TxtEntityFilePath, info);
-							break;
-						case GenerateType.Map:
-							SetValueFromConfig(CbWebModel, TxtMapNamespace, TxtMapFilePath, info);
-							break;
-							//case GenerateType.Repository:
-							//    SetValueFromConfig(CbRepository, TxtRepositoryNamespace, TxtRepositoryFilePath, arr);
-							//    break;
-							//case GenerateType.Bl:
-							//    SetValueFromConfig(CbBl, TxtBlNamespace, TxtBlFilePath, arr);
-							//    break;
-					}
+					var checkBox = GetCheckBox(fieldInfos, info.GenerateType);
+					if (checkBox == null) continue;
+
+					var txtNamespace = GetNamespaceTextBox(fieldInfos, info.GenerateType);
+					if (txtNamespace == null) continue;
+
+					var txtFilePath = GetFilePathTextBox(fieldInfos, info.GenerateType);
+					if (txtFilePath == null) continue;
+
+					SetValueFromConfig(checkBox, txtNamespace, txtFilePath, info);
 				}
 			}
 			catch (Exception e)
@@ -253,6 +230,43 @@ namespace CodeGenerator.Form
 				LogHelper.Error(this, e);
 			}
 			filePathTextBox.Text = filePath;
+		}
+
+		#endregion
+
+		#region 获取私有字段
+
+		private CheckBox GetCheckBox(FieldInfo[] fieldInfos, GenerateType generateType)
+		{
+			var checkbox = fieldInfos.FirstOrDefault(t => t.Name == $"Cb{generateType.ToString()}");
+			if (checkbox == null)
+				return null;
+
+			return (CheckBox)checkbox.GetValue(this);
+		}
+
+		private TextBox GetNamespaceTextBox(FieldInfo[] fieldInfos, GenerateType generateType)
+		{
+			var txtNamespace = fieldInfos.FirstOrDefault(t => t.Name == $"Txt{generateType.ToString()}Namespace");
+			if (txtNamespace == null) return null;
+
+			return (TextBox)txtNamespace.GetValue(this);
+		}
+
+		private TextBox GetFilePathTextBox(FieldInfo[] fieldInfos, GenerateType generateType)
+		{
+			var txtFilePath = fieldInfos.FirstOrDefault(t => t.Name == $"Txt{generateType.ToString()}FilePath");
+			if (txtFilePath == null) return null;
+
+			return (TextBox)txtFilePath.GetValue(this);
+		}
+
+		private Button GetFilePathButton(FieldInfo[] fieldInfos, GenerateType generateType)
+		{
+			var btnFilePath = fieldInfos.FirstOrDefault(t => t.Name == $"Btn{generateType.ToString()}FilePath");
+			if (btnFilePath == null) return null;
+
+			return (Button)btnFilePath.GetValue(this);
 		}
 
 		#endregion

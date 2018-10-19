@@ -157,7 +157,7 @@ namespace CodeGenerator.Form
 
         private void GenerateCode(TreeModel treeModel)
         {
-            var window = new GenerateArgumentWindow
+            var window = new ArgumentWindow
             {
                 Owner = this
             };

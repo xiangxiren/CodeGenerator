@@ -3,9 +3,10 @@ using System.Linq;
 using System.Text;
 using CodeGenerator.Pdm;
 
-namespace CodeGenerator.Generate
+namespace CodeGenerator.Generate.Code
 {
-	public class MapGenerateCode : GenerateCodeBase, IGenerateCode
+	[CodeGenerator(GenerateType.Config)]
+	public class ConfigGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileName => "Configuration.cs";
 
@@ -16,8 +17,6 @@ namespace CodeGenerator.Generate
 			{
 				#region using
 
-				if (argumentInfo.ClassNamespace != argumentInfo.GenerateArgument.EntityNamespace && !string.IsNullOrEmpty(argumentInfo.GenerateArgument.EntityNamespace))
-					sw.WriteLine("using {0};", argumentInfo.GenerateArgument.EntityNamespace);
 				sw.WriteLine("using Microsoft.EntityFrameworkCore;");
 				sw.WriteLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
 				sw.WriteLine();
@@ -104,7 +103,7 @@ namespace CodeGenerator.Generate
 								t => t.ChildTable.Id == table.Id && t.ForeignKey.Id == reference.ForeignKey.Id);
 						if (childTableInfo == null) continue;
 
-						sw.WriteLine("            builder.{0}(t => t.{1})", reference.ForeignKey.Mandatory ? "HasOne" : "HasOne", reference.ParentPropertyName);
+						sw.WriteLine("            builder.{0}(t => t.{1})", "HasOne", reference.ParentPropertyName);
 						sw.WriteLine("                .WithMany(t => t.{0})", GetListPropertyName(childTableInfo.ChildPropertyName));
 						sw.WriteLine("                .HasForeignKey(d => d.{0});", reference.ForeignKey.Code);
 

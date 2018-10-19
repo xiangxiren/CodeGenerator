@@ -7,7 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.CSharp;
 
-namespace CodeGenerator.Generate
+namespace CodeGenerator.Generate.DynamicGenerate
 {
     /// <summary>
     /// 工具类
