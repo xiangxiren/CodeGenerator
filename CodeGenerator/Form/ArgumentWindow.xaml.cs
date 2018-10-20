@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,7 +30,7 @@ namespace CodeGenerator.Form
 		{
 			InitializeComponent();
 
-			GenerateArgument = new GenerateArgument { ArgumentInfos = new List<ArgumentInfo>() };
+			GenerateArgument = new GenerateArgument { ProjectName = string.Empty, FilePath = string.Empty };
 			ReadGenerateArgumentFile();
 		}
 
@@ -68,74 +67,28 @@ namespace CodeGenerator.Form
 
 		private void BtnSave_OnClick(object sender, RoutedEventArgs e)
 		{
-			var fieldInfos = GetFieldInfos();
-
-			bool flag = false;
-
-			foreach (GenerateType type in Enum.GetValues(typeof(GenerateType)))
+			if (string.IsNullOrEmpty(TxtProjectName.Text))
 			{
-				var checkboxValue = GetCheckBox(fieldInfos, type);
-				if (checkboxValue == null) continue;
+				MessageBox.Show(this, "请输入项目名称", "提示");
+				TxtProjectName.Focus();
 
-				var txtNamespaceValue = GetNamespaceTextBox(fieldInfos, type);
-				if (txtNamespaceValue == null) continue;
-
-				var txtFilePathValue = GetFilePathTextBox(fieldInfos, type);
-				if (txtFilePathValue == null) continue;
-
-				var btnFilePathValue = GetFilePathButton(fieldInfos, type);
-				if (btnFilePathValue == null) continue;
-
-				if (GetGenerateArgument(checkboxValue, txtNamespaceValue, txtFilePathValue, BtnEntityFilePath,
-					type)) continue;
-
-				flag = true;
-				break;
+				return;
 			}
 
-			if (flag) return;
+			if (string.IsNullOrEmpty(TxtFilePath.Text))
+			{
+				MessageBox.Show(this, "请选择文件存放根路径", "提示");
+				BtnFilePath.Focus();
+
+				return;
+			}
+
+			GenerateArgument.ProjectName = TxtProjectName.Text;
+			GenerateArgument.FilePath = TxtFilePath.Text;
 
 			WriteGenerateArgumentFile();
 			DialogResult = true;
 			Close();
-		}
-
-		private FieldInfo[] GetFieldInfos()
-		{
-			return GetType().GetFields(BindingFlags.Instance |
-															BindingFlags.Static |
-															BindingFlags.Public |
-															BindingFlags.NonPublic |
-															BindingFlags.DeclaredOnly);
-		}
-
-		private bool GetGenerateArgument(CheckBox checkBox, TextBox namespaceTextBox, TextBox filePathTextBox, Button filePathButton, GenerateType generateType)
-		{
-			if (!checkBox.IsChecked.HasValue || !checkBox.IsChecked.Value) return true;
-
-			if (string.IsNullOrEmpty(namespaceTextBox.Text))
-			{
-				MessageBox.Show(this, $"如果要生成{generateType}，请输入命名空间", "提示");
-				namespaceTextBox.Focus();
-
-				return false;
-			}
-			if (string.IsNullOrEmpty(filePathTextBox.Text))
-			{
-				MessageBox.Show(this, $"如果要生成{generateType}，请选择文件保存目录", "提示");
-				filePathButton.Focus();
-
-				return false;
-			}
-
-			GenerateArgument.ArgumentInfos.Add(new ArgumentInfo
-			{
-				GenerateType = generateType,
-				ClassNamespace = namespaceTextBox.Text,
-				FileSavePath = filePathTextBox.Text
-			});
-
-			return true;
 		}
 
 		private void GenerateArgumentWindow_OnKeyDown(object sender, KeyEventArgs e)
@@ -161,6 +114,35 @@ namespace CodeGenerator.Form
 			if (fieldInfo == null) return null;
 
 			return (TextBox)fieldInfo.GetValue(this);
+		}
+
+		private void TxtProjectName_OnTextChanged(object sender, TextChangedEventArgs e)
+		{
+			var textBox = (TextBox)sender;
+			if (sender == null) return;
+
+			TxtEntityNamespace.Text = $"{textBox.Text}.{GenerateArgument.EntityNamespaceTemp}";
+			TxtConfigNamespace.Text = $"{textBox.Text}.{GenerateArgument.ConfigNamespaceTemp}";
+			TxtDtoNamespace.Text = $"{textBox.Text}.{GenerateArgument.DtoNamespaceTemp}";
+			TxtQueryParamNamespace.Text = $"{textBox.Text}.{GenerateArgument.QueryParamNamespaceTemp}";
+			TxtInterfaceNamespace.Text = $"{textBox.Text}.{GenerateArgument.InterfaceNamespaceTemp}";
+			TxtImplementNamespace.Text = $"{textBox.Text}.{GenerateArgument.ImplementNamespaceTemp}";
+			TxtControllerNamespace.Text = $"{textBox.Text}.{GenerateArgument.ControllerNamespaceTemp}";
+		}
+
+		private void TxtFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
+		{
+			var textBox = (TextBox)sender;
+			if (sender == null) return;
+
+			TxtEntityFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.EntityFilePath);
+			TxtConfigFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.ConfigFilePath);
+			TxtDtoFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.DtoFilePath);
+			TxtQueryParamFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.QueryParamFilePath);
+			TxtInterfaceFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.InterfaceFilePath);
+			TxtImplementFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.ImplementFilePath);
+			TxtControllerFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.ControllerFilePath);
+			TxtViewFilePath.Text = Path.Combine(textBox.Text, GenerateArgument.ViewFilePath);
 		}
 
 		#endregion
@@ -192,81 +174,13 @@ namespace CodeGenerator.Form
 
 				var generateArgument = JsonConvert.DeserializeObject<GenerateArgument>(argument);
 
-				var fieldInfos = GetFieldInfos();
-
-				foreach (var info in generateArgument.ArgumentInfos)
-				{
-					var checkBox = GetCheckBox(fieldInfos, info.GenerateType);
-					if (checkBox == null) continue;
-
-					var txtNamespace = GetNamespaceTextBox(fieldInfos, info.GenerateType);
-					if (txtNamespace == null) continue;
-
-					var txtFilePath = GetFilePathTextBox(fieldInfos, info.GenerateType);
-					if (txtFilePath == null) continue;
-
-					SetValueFromConfig(checkBox, txtNamespace, txtFilePath, info);
-				}
+				TxtProjectName.Text = generateArgument.ProjectName;
+				TxtFilePath.Text = generateArgument.FilePath;
 			}
 			catch (Exception e)
 			{
 				LogHelper.Error(this, e);
 			}
-		}
-
-		private void SetValueFromConfig(CheckBox checkBox, TextBox namespaceTextBox, TextBox filePathTextBox, ArgumentInfo argumentInfo)
-		{
-			checkBox.IsChecked = true;
-			namespaceTextBox.Text = argumentInfo.ClassNamespace;
-
-			var filePath = argumentInfo.FileSavePath;
-			try
-			{
-				if (!Directory.Exists(filePath))
-					Directory.CreateDirectory(filePath);
-			}
-			catch (Exception e)
-			{
-				LogHelper.Error(this, e);
-			}
-			filePathTextBox.Text = filePath;
-		}
-
-		#endregion
-
-		#region 获取私有字段
-
-		private CheckBox GetCheckBox(FieldInfo[] fieldInfos, GenerateType generateType)
-		{
-			var checkbox = fieldInfos.FirstOrDefault(t => t.Name == $"Cb{generateType.ToString()}");
-			if (checkbox == null)
-				return null;
-
-			return (CheckBox)checkbox.GetValue(this);
-		}
-
-		private TextBox GetNamespaceTextBox(FieldInfo[] fieldInfos, GenerateType generateType)
-		{
-			var txtNamespace = fieldInfos.FirstOrDefault(t => t.Name == $"Txt{generateType.ToString()}Namespace");
-			if (txtNamespace == null) return null;
-
-			return (TextBox)txtNamespace.GetValue(this);
-		}
-
-		private TextBox GetFilePathTextBox(FieldInfo[] fieldInfos, GenerateType generateType)
-		{
-			var txtFilePath = fieldInfos.FirstOrDefault(t => t.Name == $"Txt{generateType.ToString()}FilePath");
-			if (txtFilePath == null) return null;
-
-			return (TextBox)txtFilePath.GetValue(this);
-		}
-
-		private Button GetFilePathButton(FieldInfo[] fieldInfos, GenerateType generateType)
-		{
-			var btnFilePath = fieldInfos.FirstOrDefault(t => t.Name == $"Btn{generateType.ToString()}FilePath");
-			if (btnFilePath == null) return null;
-
-			return (Button)btnFilePath.GetValue(this);
 		}
 
 		#endregion

@@ -40,14 +40,24 @@ namespace CodeGenerator.Generate
 		Repository,
 
 		/// <summary>
-		/// 服务
+		/// 服务接口
 		/// </summary>
-		Service,
+		Interface,
+
+		/// <summary>
+		/// 服务实现
+		/// </summary>
+		Implement,
 
 		/// <summary>
 		/// Dto
 		/// </summary>
 		Dto,
+
+		/// <summary>
+		/// 查询参数
+		/// </summary>
+		QueryParam,
 
 		/// <summary>
 		/// 控制器
@@ -63,8 +73,88 @@ namespace CodeGenerator.Generate
 	public class GenerateArgument
 	{
 		/// <summary>
-		/// 参数集合
+		/// 项目名称，所有类命名空间根
 		/// </summary>
-		public List<ArgumentInfo> ArgumentInfos { get; set; }
+		public string ProjectName { get; set; }
+
+		/// <summary>
+		/// 生成文件存放根路径
+		/// </summary>
+		public string FilePath { get; set; }
+
+		/// <summary>
+		/// 实体文件存放路径
+		/// </summary>
+		public static string EntityFilePath { get; } = "Data\\Entity";
+
+		/// <summary>
+		/// 映射文件存放路径
+		/// </summary>
+		public static string ConfigFilePath { get; } = "Data\\Configuration";
+
+		/// <summary>
+		/// 数据传输对象文件存储路径
+		/// </summary>
+		public static string DtoFilePath { get; set; } = "Service\\Dto";
+
+		/// <summary>
+		/// 查询参数存放路径
+		/// </summary>
+		public static string QueryParamFilePath { get; set; } = "Service\\QueryParam";
+
+		/// <summary>
+		/// 服务接口文件存放路径
+		/// </summary>
+		public static string InterfaceFilePath { get; set; } = "Service\\Interface";
+
+		/// <summary>
+		/// 服务实现文件存放路径
+		/// </summary>
+		public static string ImplementFilePath { get; set; } = "Service\\Implement";
+
+		/// <summary>
+		/// 控制器文件存放路径
+		/// </summary>
+		public static string ControllerFilePath { get; set; } = "Web\\Controllers";
+
+		/// <summary>
+		/// 视图文件存放路径
+		/// </summary>
+		public static string ViewFilePath { get; set; } = "Web\\Views";
+
+		/// <summary>
+		/// 实体命名空间模板
+		/// </summary>
+		public static string EntityNamespaceTemp { get; } = "Data.Entity";
+
+		/// <summary>
+		/// 映射命名空间模板
+		/// </summary>
+		public static string ConfigNamespaceTemp { get; } = "Data.Configuration";
+
+		/// <summary>
+		/// 数据传输对象命名空间模板
+		/// </summary>
+		public static string DtoNamespaceTemp { get; set; } = "Service.Dto";
+
+		/// <summary>
+		/// 查询参数命名空间模板
+		/// </summary>
+		public static string QueryParamNamespaceTemp { get; set; } = "Service.QueryParam";
+
+		/// <summary>
+		/// 服务接口命名空间模板
+		/// </summary>
+		public static string InterfaceNamespaceTemp { get; set; } = "Service.Interface";
+
+		/// <summary>
+		/// 服务实现命名空间模板
+		/// </summary>
+		public static string ImplementNamespaceTemp { get; set; } = "Service.Implement";
+
+		/// <summary>
+		/// 控制器命名空间模板
+		/// </summary>
+		public static string ControllerNamespaceTemp { get; set; } = "Web.Controllers";
 	}
 }

@@ -7,11 +7,11 @@ namespace CodeGenerator.Generate.Code
 	[CodeGenerator(GenerateType.Dto)]
 	public class DtoGenerateCode : GenerateCodeBase, IGenerateCode
 	{
-		protected override string FileName => "Dto.cs";
+		protected override string FileNameTemplate => "{0}Dto.cs";
 
-		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
+		public void Generate(TableInfo table, GenerateArgument argument)
 		{
-			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
+			using (var fs = new FileStream(GetFullFilePath(table.TableName, GenerateArgument.DtoFilePath, argument.FilePath), FileMode.Create))
 			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
@@ -23,7 +23,7 @@ namespace CodeGenerator.Generate.Code
 
 				#endregion
 
-				sw.WriteLine("namespace {0}", argumentInfo.ClassNamespace);
+				sw.WriteLine("namespace {0}.{1}", argument.ProjectName, GenerateArgument.DtoNamespaceTemp);
 				sw.WriteLine("{");
 				sw.WriteLine("    /// <summary>");
 				sw.WriteLine("    /// {0}Dto", table.Comment);

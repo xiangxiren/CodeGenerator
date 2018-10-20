@@ -93,7 +93,9 @@
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Generate\CodeGeneratorAttribute.cs" />
-    <Compile Include="Generate\Code\BlGenerateCode.cs" />
+    <Compile Include="Generate\Code\ControllerGenerateCode.cs" />
+    <Compile Include="Generate\Code\ServiceImplementGenerateCode.cs" />
+    <Compile Include="Generate\Code\ServiceInterfaceGenerateCode.cs" />
     <Compile Include="Generate\Code\DtoGenerateCode.cs" />
     <Compile Include="Generate\DynamicGenerate\DynClassUtils.cs" />
     <Compile Include="Generate\GenerateModel\CodeTemplate.cs" />
@@ -104,7 +106,7 @@
     <Compile Include="Generate\Code\EntityGenerateCode.cs" />
     <Compile Include="Generate\GenerateArgument.cs" />
     <Compile Include="Generate\GenerateCodeBase.cs" />
-    <Compile Include="Generate\Code\RepositoryGenerateCode.cs" />
+    <Compile Include="Generate\Code\QueryParamGenerateCode.cs" />
     <Compile Include="Generate\Code\ConfigGenerateCode.cs" />
     <Compile Include="Form\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

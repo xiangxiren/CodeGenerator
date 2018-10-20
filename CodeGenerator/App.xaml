@@ -26,7 +26,7 @@
 
         <Style x:Key="TxtStyle" TargetType="{x:Type TextBox}">
             <Setter Property="Margin" Value="5,0,0,0" />
-            <Setter Property="Width" Value="160" />
+            <Setter Property="Width" Value="200" />
             <Setter Property="Height" Value="22" />
             <Setter Property="HorizontalAlignment" Value="Left" />
             <Setter Property="VerticalAlignment" Value="Center"></Setter>

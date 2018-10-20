@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CodeGenerator.Generate;
-using CodeGenerator.Generate.Code;
 using CodeGenerator.Generate.DynamicGenerate;
 using CodeGenerator.Pdm;
 
@@ -26,7 +25,7 @@ namespace CodeGenerator.Form
 		{
 			try
 			{
-				CodeGenerators = CodeGeneratorFactory.GetCodeGenerators("{\"MainTable\": \"User\", \"Author\": \"熊力伟\"}");
+				//				CodeGenerators = CodeGeneratorFactory.GetCodeGenerators("{\"MainTable\": \"User\", \"Author\": \"熊力伟\"}");
 			}
 			catch (Exception e)
 			{
@@ -47,15 +46,15 @@ namespace CodeGenerator.Form
 
 			foreach (var info in _tableInfos)
 			{
-				foreach (var argument in _generateArgument.ArgumentInfos)
+				foreach (GenerateType type in Enum.GetValues(typeof(GenerateType)))
 				{
 					try
 					{
-						var generateCode = GetGenerateCode(argument.GenerateType);
+						var generateCode = GetGenerateCode(type);
 
 						if (generateCode == null) continue;
 
-						generateCode.Generate(info, argument);
+						generateCode.Generate(info, _generateArgument);
 
 						//                        foreach (var generator in CodeGenerators)
 						//                        {
@@ -64,7 +63,7 @@ namespace CodeGenerator.Form
 					}
 					catch (Exception e)
 					{
-						LogHelper.Error(this, $"表{info.Code}生成{argument.GenerateType}错误.{e.Message}");
+						LogHelper.Error(this, $"表{info.Code}生成{type}错误.{e.Message}");
 					}
 				}
 

@@ -8,22 +8,23 @@ namespace CodeGenerator.Generate.Code
 	[CodeGenerator(GenerateType.Config)]
 	public class ConfigGenerateCode : GenerateCodeBase, IGenerateCode
 	{
-		protected override string FileName => "Configuration.cs";
+		protected override string FileNameTemplate => "{0}Configuration.cs";
 
-		public void Generate(TableInfo table, ArgumentInfo argumentInfo)
+		public void Generate(TableInfo table, GenerateArgument argument)
 		{
-			using (var fs = new FileStream(GetFullFilePath(table.TableName, argumentInfo.FileSavePath), FileMode.Create))
+			using (var fs = new FileStream(GetFullFilePath(table.TableName, GenerateArgument.ConfigFilePath, argument.FilePath), FileMode.Create))
 			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
 				#region using
 
+				sw.WriteLine("using {0}.Data.Entity;", argument.ProjectName);
 				sw.WriteLine("using Microsoft.EntityFrameworkCore;");
 				sw.WriteLine("using Microsoft.EntityFrameworkCore.Metadata.Builders;");
 				sw.WriteLine();
 
 				#endregion
 
-				sw.WriteLine("namespace {0}", argumentInfo.ClassNamespace);
+				sw.WriteLine("namespace {0}.{1}", argument.ProjectName, GenerateArgument.ConfigNamespaceTemp);
 				sw.WriteLine("{");
 
 				sw.WriteLine("    /// <inheritdoc />");
