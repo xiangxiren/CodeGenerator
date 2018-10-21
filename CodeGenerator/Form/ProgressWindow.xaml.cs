@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using CodeGenerator.Generate;
-using CodeGenerator.Generate.DynamicGenerate;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Form
@@ -50,11 +49,9 @@ namespace CodeGenerator.Form
 				{
 					try
 					{
-						var generateCode = GetGenerateCode(type);
+						var generateCodes = GetGenerateCodes(type);
 
-						if (generateCode == null) continue;
-
-						generateCode.Generate(info, _generateArgument);
+						generateCodes.ForEach(t => t.Generate(info, _generateArgument));
 
 						//                        foreach (var generator in CodeGenerators)
 						//                        {
@@ -88,21 +85,19 @@ namespace CodeGenerator.Form
 			Task.Factory.StartNew(ExecuteGenerate);
 		}
 
-		private IGenerateCode GetGenerateCode(GenerateType generateType)
+		private List<IGenerateCode> GetGenerateCodes(GenerateType generateType)
 		{
 			var types = GetType().Assembly.GetTypes()
 				.Where(t => typeof(IGenerateCode).IsAssignableFrom(t) && !t.IsAbstract);
 
-			var generateCodeType =
+			var list =
 				(from type in types
 				 let attr = type.GetCustomAttribute<CodeGeneratorAttribute>()
 				 where attr != null && attr.GenerateType == generateType
 				 select type)
-				.FirstOrDefault();
+				.ToList();
 
-			if (generateCodeType == null) return null;
-
-			return (IGenerateCode)Activator.CreateInstance(generateCodeType);
+			return list.Select(t => (IGenerateCode)Activator.CreateInstance(t)).ToList();
 		}
 	}
 }

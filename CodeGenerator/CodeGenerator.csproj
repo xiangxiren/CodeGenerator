@@ -97,6 +97,7 @@
     <Compile Include="Generate\Code\ServiceImplementGenerateCode.cs" />
     <Compile Include="Generate\Code\ServiceInterfaceGenerateCode.cs" />
     <Compile Include="Generate\Code\DtoGenerateCode.cs" />
+    <Compile Include="Generate\Code\ViewIndexGenerateCode.cs" />
     <Compile Include="Generate\DynamicGenerate\DynClassUtils.cs" />
     <Compile Include="Generate\GenerateModel\CodeTemplate.cs" />
     <Compile Include="Generate\GenerateModel\GeneratorWrapper.cs" />

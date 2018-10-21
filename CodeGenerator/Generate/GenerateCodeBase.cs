@@ -16,15 +16,17 @@ namespace CodeGenerator.Generate
 		/// <returns></returns>
 		protected virtual string GetFullFilePath(string formatTableName, string midllePath, string fileSavePath)
 		{
-			EnsurePathExist(Path.Combine(fileSavePath, midllePath));
-			return Path.Combine(fileSavePath, midllePath, string.Format(FileNameTemplate, formatTableName));
+			var folderPath = Path.Combine(fileSavePath, midllePath);
+
+			EnsurePathExist(folderPath);
+			return Path.Combine(folderPath, string.Format(FileNameTemplate, formatTableName));
 		}
 
 		/// <summary>
 		/// 确保目录存在
 		/// </summary>
 		/// <param name="fileSavePath"></param>
-		private void EnsurePathExist(string fileSavePath)
+		protected void EnsurePathExist(string fileSavePath)
 		{
 			if (!Directory.Exists(fileSavePath))
 			{
