@@ -4,10 +4,11 @@ using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate.Code
 {
-	[CodeGenerator(GenerateType.Controller)]
 	public class ControllerGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileNameTemplate => "{0}Controller.cs";
+
+		public GenerateType GenerateType { get; set; } = GenerateType.Controller;
 
 		public void Generate(TableInfo table, GenerateArgument argument)
 		{
@@ -109,7 +110,7 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("        /// <param name=\"model\"></param>");
 				sw.WriteLine("        /// <returns></returns>");
 				sw.WriteLine("        [Permission(\"Edit{0}\")]", table.TableName);
-				sw.WriteLine("        public IActionResult Get{0}({0}Dto model)", table.TableName);
+				sw.WriteLine("        public IActionResult Update{0}({0}Dto model)", table.TableName);
 				sw.WriteLine("        {");
 				sw.WriteLine("            return ActionHandler(() => _{0}Service.Update{1}(model));", GetCamelVarName(table.TableName), table.TableName);
 				sw.WriteLine("        }");

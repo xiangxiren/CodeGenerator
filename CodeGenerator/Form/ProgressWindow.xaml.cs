@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -45,13 +44,12 @@ namespace CodeGenerator.Form
 
 			foreach (var info in _tableInfos)
 			{
-				foreach (GenerateType type in Enum.GetValues(typeof(GenerateType)))
+				var generateCodes = GetGenerateCodes();
+				foreach (var generateCode in generateCodes)
 				{
 					try
 					{
-						var generateCodes = GetGenerateCodes(type);
-
-						generateCodes.ForEach(t => t.Generate(info, _generateArgument));
+						generateCode.Generate(info, _generateArgument);
 
 						//                        foreach (var generator in CodeGenerators)
 						//                        {
@@ -60,7 +58,7 @@ namespace CodeGenerator.Form
 					}
 					catch (Exception e)
 					{
-						LogHelper.Error(this, $"表{info.Code}生成{type}错误.{e.Message}");
+						LogHelper.Error(this, $"表{info.Code}生成{generateCode}错误.{e.Message}");
 					}
 				}
 
@@ -85,19 +83,12 @@ namespace CodeGenerator.Form
 			Task.Factory.StartNew(ExecuteGenerate);
 		}
 
-		private List<IGenerateCode> GetGenerateCodes(GenerateType generateType)
+		private List<IGenerateCode> GetGenerateCodes()
 		{
 			var types = GetType().Assembly.GetTypes()
-				.Where(t => typeof(IGenerateCode).IsAssignableFrom(t) && !t.IsAbstract);
+				.Where(t => typeof(IGenerateCode).IsAssignableFrom(t) && !t.IsAbstract).ToList();
 
-			var list =
-				(from type in types
-				 let attr = type.GetCustomAttribute<CodeGeneratorAttribute>()
-				 where attr != null && attr.GenerateType == generateType
-				 select type)
-				.ToList();
-
-			return list.Select(t => (IGenerateCode)Activator.CreateInstance(t)).ToList();
+			return types.Select(t => (IGenerateCode)Activator.CreateInstance(t)).ToList();
 		}
 	}
 }

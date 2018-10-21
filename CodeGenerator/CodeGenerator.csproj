@@ -92,11 +92,11 @@
     <Compile Include="Form\AutoCompleteTextBox.xaml.cs">
       <DependentUpon>AutoCompleteTextBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Generate\CodeGeneratorAttribute.cs" />
     <Compile Include="Generate\Code\ControllerGenerateCode.cs" />
     <Compile Include="Generate\Code\ServiceImplementGenerateCode.cs" />
     <Compile Include="Generate\Code\ServiceInterfaceGenerateCode.cs" />
     <Compile Include="Generate\Code\DtoGenerateCode.cs" />
+    <Compile Include="Generate\Code\ViewEditGenerateCode.cs" />
     <Compile Include="Generate\Code\ViewIndexGenerateCode.cs" />
     <Compile Include="Generate\DynamicGenerate\DynClassUtils.cs" />
     <Compile Include="Generate\GenerateModel\CodeTemplate.cs" />

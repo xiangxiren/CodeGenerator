@@ -4,10 +4,11 @@ using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate.Code
 {
-	[CodeGenerator(GenerateType.QueryParam)]
 	public class QueryParamGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileNameTemplate => "{0}QueryParam.cs";
+
+		public GenerateType GenerateType { get; set; } = GenerateType.QueryParam;
 
 		public void Generate(TableInfo table, GenerateArgument argument)
 		{

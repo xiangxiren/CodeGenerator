@@ -5,10 +5,11 @@ using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate.Code
 {
-	[CodeGenerator(GenerateType.Config)]
 	public class ConfigGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileNameTemplate => "{0}Configuration.cs";
+
+		public GenerateType GenerateType { get; set; } = GenerateType.Config;
 
 		public void Generate(TableInfo table, GenerateArgument argument)
 		{

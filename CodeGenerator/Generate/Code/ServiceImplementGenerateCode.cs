@@ -1,13 +1,15 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate.Code
 {
-	[CodeGenerator(GenerateType.Implement)]
 	public class ServiceImplementGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileNameTemplate => "{0}Service.cs";
+
+		public GenerateType GenerateType { get; set; } = GenerateType.Implement;
 
 		public void Generate(TableInfo table, GenerateArgument argument)
 		{
@@ -56,9 +58,11 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("            {");
 
 				var index = 1;
-				foreach (var columnInfo in table.ColumnInfos)
+				var columnsNoPrimaryKey = table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode).ToList();
+
+				foreach (var columnInfo in columnsNoPrimaryKey)
 				{
-					sw.WriteLine("                {0} = model.{0}{1}", columnInfo.Code, index == table.ColumnInfos.Count ? "" : ",");
+					sw.WriteLine("                {0} = model.{0}{1}", columnInfo.Code, index == columnsNoPrimaryKey.Count ? "" : ",");
 
 					index++;
 				}
@@ -77,7 +81,7 @@ namespace CodeGenerator.Generate.Code
 					table.Comment);
 				sw.WriteLine();
 
-				foreach (var columnInfo in table.ColumnInfos)
+				foreach (var columnInfo in columnsNoPrimaryKey)
 				{
 					sw.WriteLine("            {0}.{1} = model.{1};", GetCamelVarName(table.TableName), columnInfo.Code);
 				}

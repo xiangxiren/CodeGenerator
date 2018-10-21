@@ -65,9 +65,14 @@ namespace CodeGenerator.Generate
 		Controller,
 
 		/// <summary>
-		/// 视图
+		/// 列表视图
 		/// </summary>
-		View
+		ViewIndex,
+
+		/// <summary>
+		/// 编辑视图
+		/// </summary>
+		ViewEdit
 	}
 
 	public class GenerateArgument

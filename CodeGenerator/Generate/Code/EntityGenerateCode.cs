@@ -4,10 +4,11 @@ using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate.Code
 {
-	[CodeGenerator(GenerateType.Entity)]
 	public class EntityGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileNameTemplate => "{0}.cs";
+
+		public GenerateType GenerateType { get; set; } = GenerateType.Entity;
 
 		public void Generate(TableInfo table, GenerateArgument argument)
 		{

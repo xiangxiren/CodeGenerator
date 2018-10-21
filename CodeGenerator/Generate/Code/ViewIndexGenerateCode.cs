@@ -1,13 +1,15 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Text;
 using CodeGenerator.Pdm;
 
 namespace CodeGenerator.Generate.Code
 {
-	[CodeGenerator(GenerateType.Config)]
 	public class ViewIndexGenerateCode : GenerateCodeBase, IGenerateCode
 	{
 		protected override string FileNameTemplate => "Index.cshtml";
+
+		public GenerateType GenerateType { get; set; } = GenerateType.ViewIndex;
 
 		protected override string GetFullFilePath(string formatTableName, string midllePath, string fileSavePath)
 		{
@@ -92,14 +94,14 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("            url: '@Url.Action(\"Get{0}s\")',", table.TableName);
 				sw.WriteLine("            columns: [");
 
-				foreach (var columnInfo in table.ColumnInfos)
+				foreach (var columnInfo in table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode))
 				{
 					sw.WriteLine("                {0} field: '{1}', title: '{2}', sortable: true {3},", "{",
 						GetCamelVarName(columnInfo.Code), columnInfo.Comment, "}");
 				}
 
 				sw.WriteLine("                {");
-				sw.WriteLine("                    field: '{0}',", table.PrimaryKeyCode);
+				sw.WriteLine("                    field: '{0}',", GetCamelVarName(table.PrimaryKeyCode));
 				sw.WriteLine("                    title: '操作',");
 				sw.WriteLine("                    cardVisible: false,");
 				sw.WriteLine("                    align: 'center',");
