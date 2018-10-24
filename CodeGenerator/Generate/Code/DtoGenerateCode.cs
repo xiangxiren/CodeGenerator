@@ -18,8 +18,7 @@ namespace CodeGenerator.Generate.Code
 				#region using
 
 				sw.WriteLine("using System;");
-				if (table.ChildTableInfos != null && table.ChildTableInfos.Count > 0)
-					sw.WriteLine("using System.Collections.Generic;");
+
 				sw.WriteLine();
 
 				#endregion

@@ -39,10 +39,10 @@ namespace CodeGenerator.Generate.Code
 
 					sw.WriteLine("    <div class=\"form-group\">");
 					sw.WriteLine(
-						"        <label class=\"col-sm-3 control-label\"><span style=\"color: red\">*&nbsp;</span>{0}</label>",
+						"        <label class=\"col-sm-2 control-label\"><span style=\"color: red\">*&nbsp;</span>{0}</label>",
 						columnInfo.Comment);
 					sw.WriteLine();
-					sw.WriteLine("        <div class=\"col-sm-9\">");
+					sw.WriteLine("        <div class=\"col-sm-10\">");
 					sw.WriteLine(
 						"            <input type=\"text\" id=\"txt-{0}\" name=\"{0}\" class=\"form-control\" placeholder=\"请输入{1}\" />",
 						GetCamelVarName(columnInfo.Code), columnInfo.Comment);
