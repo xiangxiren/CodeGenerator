@@ -38,6 +38,8 @@ namespace CodeGenerator.Pdm
                 case "INT":
                 case "INTEGER":
                     return Mandatory ? "int" : "int?";
+                case "TINYINT":
+                    return Mandatory ? "int" : "int?";
                 case "BIGINT":
                     return Mandatory ? "long" : "long?";
                 case "SMALLINT":
@@ -50,10 +52,8 @@ namespace CodeGenerator.Pdm
                     return Mandatory ? "bool" : "bool?";
                 case "TEXT":
                     return "string";
-                case "UNIQUEIDENTIFIER":
+                case "UNIQUEIDENTIFIER":	
                     return Mandatory ? "Guid" : "Guid?";
-                case "TINYINT":
-                    return Mandatory ? "byte" : "byte?";
                 case "DECIMAL":
                     return Mandatory ? "decimal" : "decimal?";
                 case "DOUBLE":

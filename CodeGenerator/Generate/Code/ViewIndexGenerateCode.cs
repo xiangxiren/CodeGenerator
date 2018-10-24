@@ -128,6 +128,7 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("        function refreshTable() {");
 				sw.WriteLine("            $('#tb_{0}s', $win).bootstrapTable('refresh');", GetCamelVarName(table.TableName));
 				sw.WriteLine("        }");
+				sw.WriteLine();
 				sw.WriteLine("        $win.on('click', 'button, a', function() {");
 				sw.WriteLine("            if ($(this).has('data-click-name')) {");
 				sw.WriteLine("                var clickName = $(this).attr('data-click-name');");
@@ -136,9 +137,6 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("                switch (clickName) {");
 				sw.WriteLine("                    case 'search':");
 				sw.WriteLine("                        refreshTable();");
-				sw.WriteLine("                        break;");
-				sw.WriteLine("                    case 'clear':");
-				sw.WriteLine("                        $('#txt_filter').val('');");
 				sw.WriteLine("                        break;");
 				sw.WriteLine("                    case 'add':");
 				sw.WriteLine("                        openDialog('@Url.Action(\"Edit{0}\")', '新增{1}', 700, 'Save', [], refreshTable);", table.TableName, table.Comment);
