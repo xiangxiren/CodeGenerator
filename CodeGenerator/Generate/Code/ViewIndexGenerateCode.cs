@@ -96,8 +96,9 @@ namespace CodeGenerator.Generate.Code
 
 				foreach (var columnInfo in table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode))
 				{
-					sw.WriteLine("                {0} field: '{1}', title: '{2}', sortable: true {3},", "{",
-						GetCamelVarName(columnInfo.Code), columnInfo.Comment, "}");
+					sw.WriteLine("                {0} field: '{1}', title: '{2}', sortable: true, {3}{4}", "{",
+						GetCamelVarName(columnInfo.Code), columnInfo.Comment,
+						IsAlignCenter(columnInfo) ? "align: 'center', " : "", "}");
 				}
 
 				sw.WriteLine("                {");
@@ -169,6 +170,14 @@ namespace CodeGenerator.Generate.Code
 
 				sw.Flush();
 			}
+		}
+
+		private bool IsAlignCenter(ColumnInfo columnInfo)
+		{
+			var type = columnInfo.GetColumnType();
+
+			return type.Contains("int") || type.Contains("short") || type.Contains("long") ||
+				   type.Contains("decimal") || type.Contains("double") || type.Contains("DateTime");
 		}
 	}
 }
