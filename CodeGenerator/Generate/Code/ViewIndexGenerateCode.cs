@@ -96,9 +96,9 @@ namespace CodeGenerator.Generate.Code
 
 				foreach (var columnInfo in table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode))
 				{
-					sw.WriteLine("                {0} field: '{1}', title: '{2}', sortable: true, {3}{4}", "{",
+					sw.WriteLine("                {0} field: '{1}', title: '{2}', sortable: true{3}{4},", "{",
 						GetCamelVarName(columnInfo.Code), columnInfo.Comment,
-						IsAlignCenter(columnInfo) ? "align: 'center', " : "", "}");
+						IsAlignCenter(columnInfo) ? ", align: 'center'" : "", "}");
 				}
 
 				sw.WriteLine("                {");
