@@ -62,7 +62,13 @@ namespace CodeGenerator.Generate.Code
 
 				foreach (var columnInfo in columnsNoPrimaryKey)
 				{
-					sw.WriteLine("                {0} = model.{0}{1}", columnInfo.Code, index == columnsNoPrimaryKey.Count ? "" : ",");
+					if (columnInfo.Code.ToUpper() != "MODIFYTIME")
+					{
+						if (columnInfo.Code.ToUpper() == "CREATETIME")
+							sw.WriteLine("                {0} = DateTime.Now{1}", columnInfo.Code, index == columnsNoPrimaryKey.Count ? "" : ",");
+						else
+							sw.WriteLine("                {0} = model.{0}{1}", columnInfo.Code, index == columnsNoPrimaryKey.Count ? "" : ",");
+					}
 
 					index++;
 				}
@@ -83,7 +89,13 @@ namespace CodeGenerator.Generate.Code
 
 				foreach (var columnInfo in columnsNoPrimaryKey)
 				{
-					sw.WriteLine("            {0}.{1} = model.{1};", GetCamelVarName(table.TableName), columnInfo.Code);
+					if (columnInfo.Code.ToUpper() != "CREATETIME")
+					{
+						if (columnInfo.Code.ToUpper() == "MODIFYTIME")
+							sw.WriteLine("            {0}.{1} = DateTime.Now;", GetCamelVarName(table.TableName), columnInfo.Code);
+						else
+							sw.WriteLine("            {0}.{1} = model.{1};", GetCamelVarName(table.TableName), columnInfo.Code);
+					}
 				}
 
 				sw.WriteLine();
