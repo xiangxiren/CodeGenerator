@@ -118,6 +118,7 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("        /// <summary>");
 				sw.WriteLine("        /// 删除{0}", table.Comment);
 				sw.WriteLine("        /// </summary>");
+				sw.WriteLine("        /// <param name=\"id\"></param>");
 				sw.WriteLine("        /// <returns></returns>");
 				sw.WriteLine("        [Permission(\"Delete{0}\")]", table.TableName);
 				sw.WriteLine("        public IActionResult Delete{0}(int id)", table.TableName);
