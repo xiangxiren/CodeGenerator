@@ -98,7 +98,7 @@ namespace CodeGenerator.Generate.Code
 				{
 					sw.WriteLine("                {0} field: '{1}', title: '{2}', sortable: true{3}{4},", "{",
 						GetCamelVarName(columnInfo.Code), columnInfo.Comment,
-						IsAlignCenter(columnInfo) ? ", align: 'center'" : "", "}");
+						IsAlignCenter(columnInfo) ? ", align: 'center'" : "", " }");
 				}
 
 				sw.WriteLine("                {");

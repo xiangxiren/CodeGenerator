@@ -21,6 +21,11 @@ namespace CodeGenerator.Generate.Code
 
 		public void Generate(TableInfo table, GenerateArgument argument)
 		{
+			var columnInfos =
+				table.ColumnInfos.Where(t =>
+					t.Code != table.PrimaryKeyCode && t.Code.ToUpper() != "CREATETIME" &&
+					t.Code.ToUpper() != "MODIFYTIME").ToList();
+
 			using (var fs = new FileStream(GetFullFilePath(table.TableName, GenerateArgument.ViewFilePath, argument.FilePath), FileMode.Create))
 			using (var sw = new StreamWriter(fs, Encoding.UTF8))
 			{
@@ -32,7 +37,7 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine();
 
 				var index = 1;
-				foreach (var columnInfo in table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode))
+				foreach (var columnInfo in columnInfos)
 				{
 					if (index != 1)
 						sw.WriteLine("    <div class=\"hr-line-dashed\"></div>");
@@ -70,12 +75,12 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("            rules: {");
 
 				index = 1;
-				foreach (var columnInfo in table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode))
+				foreach (var columnInfo in columnInfos)
 				{
 					sw.WriteLine("                {0}: {1}", GetCamelVarName(columnInfo.Code), "{");
 					sw.WriteLine("                    required: true,");
 					sw.WriteLine("                    maxlength: 20");
-					sw.WriteLine("                {0}{1}", "}", table.ColumnInfos.Count(t => t.Code != table.PrimaryKeyCode) != index ? "," : "");
+					sw.WriteLine("                {0}{1}", "}", columnInfos.Count != index ? "," : "");
 
 					index++;
 				}
@@ -84,12 +89,12 @@ namespace CodeGenerator.Generate.Code
 				sw.WriteLine("            messages: {0}", "{");
 
 				index = 1;
-				foreach (var columnInfo in table.ColumnInfos.Where(t => t.Code != table.PrimaryKeyCode))
+				foreach (var columnInfo in columnInfos)
 				{
 					sw.WriteLine("                {0}: {1}", GetCamelVarName(columnInfo.Code), "{");
 					sw.WriteLine("                    required: '请输入{0}',", columnInfo.Comment);
 					sw.WriteLine("                    maxlength: '{0}长度不能大于20个字符'", columnInfo.Comment);
-					sw.WriteLine("                {0}{1}", "}", table.ColumnInfos.Count(t => t.Code != table.PrimaryKeyCode) != index ? "," : "");
+					sw.WriteLine("                {0}{1}", "}", columnInfos.Count != index ? "," : "");
 
 					index++;
 				}

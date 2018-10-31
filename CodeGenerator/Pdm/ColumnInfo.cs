@@ -29,6 +29,7 @@ namespace CodeGenerator.Pdm
 
 			if (dataType.Contains("CHAR")) return "string";
 			if (dataType.Contains("VARCHAR")) return "string";
+			if (dataType.Contains("LONGTEXT")) return "string";
 			if (dataType.Contains("NUMBER")) dataType = "DECIMAL";
 			else if (dataType.Contains("NUMERIC")) dataType = "DECIMAL";
 			else if (dataType.Contains("DECIMAL")) dataType = "DECIMAL";
